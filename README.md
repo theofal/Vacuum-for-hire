@@ -1,6 +1,5 @@
 # Vacuum-for-hire
 
-Vacuum for hire :
 * Récupère toutes les offres postées depuis le dernier run/chaque jour
 * Pas de doublons si sur un même site - hash sur l’url ?
 * Différents sites :
