@@ -6,6 +6,7 @@
     * Google jobs (API : https://cloud.google.com/talent-solution/job-search/docs) -> récupérer le htidocid (https://cloud.google.com/talent-solution/job-search/docs)
 * Enregistrement quelque part + moyen facile d’y accéder (GoogleSheet ?)
 * Stack : Go, API, Scrapping (colly? TBD), Docker, (Redis/SQLite ? titre/employeur/url/hash si nécessaire)
+* Vérifier comment implémenter un cache
 * Programme qui tourne constamment lancer des goroutines toutes les X heures
 
 améliorations: 
