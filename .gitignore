@@ -1,5 +1,7 @@
 # Folders
-.idea
+.idea/
 
 # files
 .env
+crucial-inn-*
+vacuumforhire-*

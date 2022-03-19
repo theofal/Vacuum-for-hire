@@ -3,6 +3,7 @@
 - Pas de doublons si sur un même site - hash sur l’url ? 
 - Site :
   - Google jobs (API : https://cloud.google.com/talent-solution/job-search/docs) -> récupérer le htidocid (https://cloud.google.com/talent-solution/job-search/docs)
+  - Indeed API : https://developer.indeed.com/docs/authorization/3-legged-oauth
 - Enregistrement quelque part + moyen facile d’y accéder (GoogleSheet ?)
 - Stack : Go, API, Scrapping (colly? TBD), Docker, (Redis/SQLite ? titre/employeur/url/hash si nécessaire)
 - Vérifier comment implémenter un cache
