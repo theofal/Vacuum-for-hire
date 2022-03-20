@@ -36,6 +36,5 @@ func getDotEnvVar(key string) string {
 
 func main() {
 	//fmt.Println(IndeedScrap(GetIndeedUrl(), GetIndeedJobs))
-	//fmt.Println("AAAAAAA", len(GoogleSelenium("golang").ElementsList))
 	GoogleSelenium("golang")
 }

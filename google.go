@@ -54,8 +54,9 @@ func GoogleSelenium(termToSearch string) *WebElementList {
 	chromeCaps := chrome.Capabilities{
 		Path: "",
 		Args: []string{
-			//"--headless",
+			"--headless",
 			"--no-sandbox",
+			"--window-size=1920,1080",
 			"--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0.2 Safari/604.4.7",
 		},
 	}
