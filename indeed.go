@@ -12,25 +12,6 @@ import (
 	"time"
 )
 
-type URL struct {
-	Base     string
-	Term     string
-	Endpoint string
-}
-
-type Post struct {
-	JobTitle        string
-	CompanyName     string
-	CompanyLocation string
-	JobSnippet      string
-	Date            string
-	Url             string
-}
-
-var (
-	AllJobs []Post
-)
-
 func GetIndeedUrl() URL {
 	return URL{
 		"https://fr.indeed.com/jobs?q=",
@@ -64,7 +45,7 @@ func IndeedScrap(url URL, f func(doc *goquery.Document) []Post) []Post {
 	return f(doc)
 }
 
-func GetJobs(selection *goquery.Document) []Post {
+func GetIndeedJobs(selection *goquery.Document) []Post {
 	var post Post
 	selection.Find(".result").Each(func(i int, s *goquery.Selection) {
 		url, isVisible := s.Attr("href")
