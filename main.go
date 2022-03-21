@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -36,5 +37,6 @@ func getDotEnvVar(key string) string {
 
 func main() {
 	//fmt.Println(IndeedScrap(GetIndeedUrl(), GetIndeedJobs))
-	GoogleSelenium("golang")
+	fmt.Println(GoogleSelenium("golang"))
+
 }

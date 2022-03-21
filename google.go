@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/tebeka/selenium"
-	_ "github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -34,7 +34,7 @@ func getGoogleUrl(termToSearch string) string {
 }
 
 // GoogleSelenium : Selenium instance to scrap data from Google.
-func GoogleSelenium(termToSearch string) *WebElementList {
+func GoogleSelenium(termToSearch string) *[]Post {
 	// Start a Selenium WebDriver server instance (if one is not already
 	// running).
 	url := getGoogleUrl(termToSearch)
@@ -47,7 +47,12 @@ func GoogleSelenium(termToSearch string) *WebElementList {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	defer service.Stop()
+	defer func(service *selenium.Service) {
+		err := service.Stop()
+		if err != nil {
+			//TODO LOG
+		}
+	}(service)
 
 	// Connect to the WebDriver instance running locally.
 	caps := selenium.Capabilities{"browserName": "chrome"}
@@ -64,7 +69,12 @@ func GoogleSelenium(termToSearch string) *WebElementList {
 	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
 	if err != nil {
 	}
-	defer wd.Quit()
+	defer func(wd selenium.WebDriver) {
+		err := wd.Quit()
+		if err != nil {
+			// TODO LOG
+		}
+	}(wd)
 
 	wd.SetAsyncScriptTimeout(time.Second * 10)
 	wd.SetPageLoadTimeout(time.Second * 10)
@@ -121,21 +131,29 @@ func GoogleSelenium(termToSearch string) *WebElementList {
 		}
 		if len(jobList) > 0 && index <= len(jobList)-1 {
 			jobList[index].Click()
-			jobTitle, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='BjJfJf PUpOsf']")
-			company, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='vNEEBe']")
-			location, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='Qk80Jf'][1]")
-			jobLink, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='pMhGee Co68jc j0vryd']")
-			fmt.Println(jobTitle[index].Text())
-			fmt.Println(company[index].Text())
-			fmt.Println(location[index].Text())
-			fmt.Println(jobLink.GetAttribute("href"))
-			//time.Sleep(time.Second)
+			jobTitleElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='BjJfJf PUpOsf']")
+			jobTitle, _ := jobTitleElement[index].Text()
+			companyElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='vNEEBe']")
+			companyName, _ := companyElement[index].Text()
+			locationElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='Qk80Jf'][1]")
+			companyLocation, _ := locationElement[index].Text()
+			jobLinkElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='pMhGee Co68jc j0vryd']")
+			jobLink, _ := jobLinkElement.GetAttribute("href")
+			
+			AllJobs = append(AllJobs,
+				Post{
+					JobTitle:        strings.Replace(jobTitle, "<NIL>", "", 1),
+					CompanyName:     strings.Replace(companyName, "<NIL>", "", 1),
+					CompanyLocation: strings.Replace(companyLocation, "<NIL>", "", 1),
+					Url:             strings.Replace(jobLink, "<NIL>", "", 1),
+				})
 			index++
+
 		} else {
 			time.Sleep(time.Second)
 		}
 		tmp++
 	}
 
-	return &WebElementList{ElementsList: jobList}
+	return &AllJobs
 }
