@@ -12,11 +12,17 @@ import (
 )
 
 var (
-	chromedriverPath = getDotEnvVar("WEBDRIVER_PATH")
-	port, _          = strconv.Atoi(getDotEnvVar("PORT"))
+	chromedriverPath2 = getDotEnvVar("WEBDRIVER_PATH")
+	port2, _          = strconv.Atoi(getDotEnvVar("PORT"))
 )
 
-func getGoogleUrl(termToSearch string) string {
+type WebD struct {
+	webdrive selenium.WebDriver
+}
+
+var web WebD
+
+func getGoogleUrl2(termToSearch string) string {
 	url := URL{
 		"https://www.google.com/search?&q=",
 		termToSearch,
@@ -25,12 +31,7 @@ func getGoogleUrl(termToSearch string) string {
 	return url.Base + url.Term + url.Endpoint
 }
 
-// GoogleSelenium instance to scrap data from Google.
-func GoogleSelenium(termToSearch string) *[]Post {
-	// Start a Selenium WebDriver server instance (if one is not already
-	// running).
-	url := getGoogleUrl(termToSearch)
-
+func webdriver() *WebD {
 	var opts []selenium.ServiceOption
 
 	selenium.SetDebug(false)
@@ -61,25 +62,33 @@ func GoogleSelenium(termToSearch string) *[]Post {
 	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
 	if err != nil {
 	}
-	defer func(wd selenium.WebDriver) {
-		err := wd.Quit()
-		if err != nil {
-			// TODO LOG
-		}
-	}(wd)
 
 	wd.SetAsyncScriptTimeout(time.Second * 10)
 	wd.SetPageLoadTimeout(time.Second * 10)
 	wd.SetImplicitWaitTimeout(time.Second * 10)
 
+	web.webdrive = wd
+
+	return &WebD{webdrive: wd}
+
+}
+
+// GoogleSelenium instance to scrap data from Google.
+func (wd *WebD) GoogleSelenium2(termToSearch string) *[]Post {
+	// Start a Selenium WebDriver server instance (if one is not already
+	// running).
+	url := getGoogleUrl(termToSearch)
+
+	defer wd.webdrive.Quit()
+
 	// Navigate to the simple playground interface.
-	if err := wd.Get(url); err != nil {
+	if err := wd.webdrive.Get(url); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// Consent to Google cookies.
-	acceptButton, err := wd.FindElement(selenium.ByXPATH, "//form[//span[text()=contains(., 'accepte')]]")
+	acceptButton, err := wd.webdrive.FindElement(selenium.ByXPATH, "//form[//span[text()=contains(., 'accepte')]]")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -88,7 +97,7 @@ func GoogleSelenium(termToSearch string) *[]Post {
 	log.Println("Clicking Chrome accept button")
 	fmt.Println("Clicking Chrome accept button")
 
-	locationButton, err := wd.FindElement(selenium.ByXPATH, "//*[@data-value='D7fiBh9u5kdglIxow4ILBA==']")
+	locationButton, err := wd.webdrive.FindElement(selenium.ByXPATH, "//*[@data-value='D7fiBh9u5kdglIxow4ILBA==']")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -96,7 +105,7 @@ func GoogleSelenium(termToSearch string) *[]Post {
 	locationButton.Click()
 	fmt.Println("Setting location to Paris")
 
-	setDateTab, err := wd.FindElement(selenium.ByXPATH, "//*[@data-facet='date_posted' and @role='tab']")
+	setDateTab, err := wd.webdrive.FindElement(selenium.ByXPATH, "//*[@data-facet='date_posted' and @role='tab']")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -104,7 +113,7 @@ func GoogleSelenium(termToSearch string) *[]Post {
 	setDateTab.Click()
 	fmt.Println("Clicking on date tab")
 
-	setDateToday, err := wd.FindElement(selenium.ByXPATH, "//*[@data-name='today']")
+	setDateToday, err := wd.webdrive.FindElement(selenium.ByXPATH, "//*[@data-name='today']")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -118,7 +127,7 @@ func GoogleSelenium(termToSearch string) *[]Post {
 
 	// Get the list of jobs as WebElements
 	for index != tmp {
-		jobList, err = wd.FindElements(selenium.ByXPATH, "//*[@role='treeitem']")
+		jobList, err = wd.webdrive.FindElements(selenium.ByXPATH, "//*[@role='treeitem']")
 		if err != nil {
 			break
 		}
@@ -150,3 +159,4 @@ func GoogleSelenium(termToSearch string) *[]Post {
 
 	return &AllJobs
 }
+

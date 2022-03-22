@@ -49,7 +49,7 @@ func GetIndeedJobs(selection *goquery.Document) []Post {
 	var post Post
 	selection.Find(".result").Each(func(i int, s *goquery.Selection) {
 		url, isVisible := s.Attr("href")
-		if isVisible == false {
+		if !isVisible {
 			fmt.Println(fmt.Errorf("couldn't find url %v", isVisible))
 		}
 		post.Url = ParseIndeedUrl(url)
