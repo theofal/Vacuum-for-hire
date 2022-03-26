@@ -28,15 +28,20 @@ type Post struct {
 }
 
 var (
-	AllJobs []Post
-	Logger  *zap.Logger
+	AllJobs   []Post
+	TmpLogger *zap.Logger
+	Logger    *zap.Logger
+	OldLogger *zap.SugaredLogger
 )
 
-func InitLogger() {
+func InitLogger2() {
 	config := zap.NewDevelopmentConfig()
-	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	config.EncoderConfig = zapcore.EncoderConfig{
+		MessageKey:  "message",
+		EncodeLevel: zapcore.CapitalColorLevelEncoder}
 	config.Level.SetLevel(zapcore.DebugLevel)
-	Logger, _ = config.Build()
+	TmpLogger, _ = config.Build()
+	Logger = TmpLogger
 }
 
 func getDotEnvVar(key string) string {
@@ -79,5 +84,6 @@ func ParseDate(str string) string {
 func main() {
 	InitLogger()
 	defer Logger.Sync()
+	//fmt.Println(ParseDate("Il y a 15 minutes"))
 	fmt.Println(Webdriver().SearchGoogle("Golang"))
 }

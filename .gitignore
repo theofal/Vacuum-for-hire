@@ -1,5 +1,7 @@
 # Folders
 .idea/
+logs/
 
 # files
 .env
+*.log
