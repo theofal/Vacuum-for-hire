@@ -9,6 +9,7 @@
 - Vérifier comment implémenter un cache
 - Programme qui tourne constamment lancer des goroutines toutes les X heures
 
+https://github.com/mattn/go-sqlite3
 
 #### améliorations:
 - serveur kimsufi (debian + docker)

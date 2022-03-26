@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/joho/godotenv v1.4.0
+	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/tebeka/selenium v0.9.9
 	go.uber.org/zap v1.21.0

@@ -27,8 +27,9 @@ type Post struct {
 }
 
 var (
-	AllJobs []Post
-	Logger  *zap.Logger
+	AllJobs       []Post
+	Logger        *zap.Logger
+	ProductionEnv bool
 )
 
 func getDotEnvVar(key string) string {
@@ -39,37 +40,40 @@ func getDotEnvVar(key string) string {
 	return os.Getenv(key)
 }
 
-func ParseDate(str string) string {
+func ParseDate(date string) string {
 	var amount string
-	Logger.Info("Working on it!")
-	for _, v := range str {
+	//Logger.Debug("Parsing date.", zap.String("Date", date))
+	for _, v := range date {
 		if unicode.IsDigit(v) {
 			amount += string(v)
-			Logger.Debug("Working.. ", zap.String(
-				"Value of V", string(v)),
-			)
+			//Logger.Debug("Working.. ", zap.String("Value of V", string(v)))
 		} else {
-			Logger.Debug("Working.. ", zap.String(
-				"Value of V", string(v)))
+			//Logger.Debug("Working.. ", zap.String("Value of V", string(v)))
 		}
 	}
 	intAmount, _ := strconv.Atoi(amount)
-	Logger.Warn("Careful")
-	timeNow := time.Now()
-	fmt.Println(timeNow)
+	timeMinusMinutes := time.Now().Add(-time.Minute * time.Duration(intAmount))
+	timeMinusHours := time.Now().Add(-time.Hour * time.Duration(intAmount))
+	timeMinusDays := time.Now().AddDate(0, 0, -2)
 	switch {
-	case strings.Contains(str, "minutes") || strings.Contains(str, "minute"):
-		fmt.Printf("%v/%v/%v\n", timeNow.Add(-time.Minute*time.Duration(intAmount)).Day(), timeNow.Add(-time.Minute*time.Duration(intAmount)).Month(), timeNow.Add(-time.Minute*time.Duration(intAmount)).Year())
-		return ""
-	case strings.Contains(str, "heures") || strings.Contains(str, "heure"):
-		//fmt.Println(timeNow.Add(-time.Hour * time.Duration(intAmount)))
+	case date == "PostedPubliée à l'instant" || date == "PostedAujourd'hui":
 		return fmt.Sprintf("%d/%d/%d", time.Now().Day(), time.Now().Month(), time.Now().Year())
+	case strings.Contains(strings.ToLower(date), "minute"):
+		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusMinutes.Day(), timeMinusMinutes.Month(), timeMinusMinutes.Year(), timeMinusMinutes.Hour(), timeMinusMinutes.Minute())
+	case strings.Contains(strings.ToLower(date), "heure"):
+		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusHours.Day(), timeMinusHours.Month(), timeMinusHours.Year(), timeMinusHours.Hour(), timeMinusHours.Minute())
+	case strings.Contains(strings.ToLower(date), "jour"):
+		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusDays.Day(), timeMinusDays.Month(), timeMinusDays.Year(), timeMinusDays.Hour(), timeMinusDays.Minute())
+
 	}
-	return "Couldn't find"
+	return fmt.Sprintf("Couldn't parse time \"%v\".", date)
 }
 
 func main() {
 	InitLogger()
 	defer Logger.Sync()
-	fmt.Println(Webdriver().SearchGoogle("Golang"))
+	db, sqlDb := CreateDbFile()
+	defer sqlDb.Close()
+	Webdriver().SearchGoogle("Golang")
+	db.InsertDataInTable(AllJobs)
 }

@@ -5,3 +5,4 @@ logs/
 # files
 .env
 *.log
+*.db

@@ -7,10 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
+
+//NOT USED IN PROJECT.
 
 func GetIndeedUrl() URL {
 	return URL{
@@ -57,7 +58,7 @@ func GetIndeedJobs(selection *goquery.Document) []Post {
 		post.CompanyName = s.Find(".companyName").Text()
 		post.CompanyLocation = s.Find(".companyLocation").Text()
 		post.JobSnippet = s.Find(".job-snippet>ul>li").Text()
-		post.Date = ParseIndeedDate(s.Find(".date").Text())
+		post.Date = ParseDate(s.Find(".date").Text())
 		AllJobs = append(AllJobs, post)
 	})
 	return AllJobs
@@ -75,17 +76,4 @@ func ParseIndeedUrl(url string) string {
 		return "https://fr.indeed.com/viewjob" + url[7:]
 	}
 	return "https://fr.indeed.com/viewjob?jk=" + url[len(url)-16:]
-}
-
-func ParseIndeedDate(date string) string {
-	if date == "PostedPubliée à l'instant" || date == "PostedAujourd'hui" {
-		return fmt.Sprintf("%d/%d/%d", time.Now().Day(), time.Now().Month(), time.Now().Year())
-	}
-	date = strings.Replace(date, "Postedil y a ", "", 1)
-	date = strings.Replace(date, " jour", "", 1)
-	day, err := strconv.Atoi(date)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return fmt.Sprintf("%d/%d/%d", time.Now().Day()-day, time.Now().Month(), time.Now().Year())
 }

@@ -112,8 +112,8 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 		}
 	}(wd.Webdriver)
 
-	// Navigate to the simple playground interface.
-	Logger.Info("Navigation to Chrome website.")
+	// Navigate to the Google jobs website.
+	Logger.Info("Navigating to Chrome website.")
 	if err := wd.Webdriver.Get(url); err != nil {
 		Logger.Error("Couldn't get the web page.", zap.Error(err))
 		os.Exit(1)
@@ -195,10 +195,12 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 			if err != nil {
 				Logger.Warn("couldn't click on job element", zap.String("elementIndex", strconv.Itoa(index)), zap.Error(err))
 			}
-			jobTitleElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='BjJfJf PUpOsf']")
-			jobTitle, _ := jobTitleElement[index].Text()
-			companyElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='vNEEBe']")
-			companyName, _ := companyElement[index].Text()
+			jobTitleElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='KLsYvd']")
+			jobTitle, _ := jobTitleElement.Text()
+			jobDateElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='LL4CDc']")
+			jobDate, _ := jobDateElement.GetAttribute("aria-label")
+			companyElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='nJlQNd sMzDkb']")
+			companyName, _ := companyElement.Text()
 			locationElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='Qk80Jf'][1]")
 			companyLocation, _ := locationElement[index].Text()
 			jobLinkElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='pMhGee Co68jc j0vryd']")
@@ -207,6 +209,7 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 			AllJobs = append(AllJobs,
 				Post{
 					JobTitle:        ParseString(jobTitle),
+					Date:            ParseDate(jobDate),
 					CompanyName:     ParseString(companyName),
 					CompanyLocation: ParseString(companyLocation),
 					Url:             ParseString(jobLink),
