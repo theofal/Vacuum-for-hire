@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"os"
 	"strconv"
 	"strings"
@@ -28,21 +27,9 @@ type Post struct {
 }
 
 var (
-	AllJobs   []Post
-	TmpLogger *zap.Logger
-	Logger    *zap.Logger
-	OldLogger *zap.SugaredLogger
+	AllJobs []Post
+	Logger  *zap.Logger
 )
-
-func InitLogger2() {
-	config := zap.NewDevelopmentConfig()
-	config.EncoderConfig = zapcore.EncoderConfig{
-		MessageKey:  "message",
-		EncodeLevel: zapcore.CapitalColorLevelEncoder}
-	config.Level.SetLevel(zapcore.DebugLevel)
-	TmpLogger, _ = config.Build()
-	Logger = TmpLogger
-}
 
 func getDotEnvVar(key string) string {
 	err := godotenv.Load(".env")
@@ -84,6 +71,5 @@ func ParseDate(str string) string {
 func main() {
 	InitLogger()
 	defer Logger.Sync()
-	//fmt.Println(ParseDate("Il y a 15 minutes"))
 	fmt.Println(Webdriver().SearchGoogle("Golang"))
 }

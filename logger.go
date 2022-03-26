@@ -16,7 +16,6 @@ func InitLogger() {
 		zapcore.NewCore(encoderColored, zapcore.AddSync(os.Stdout), zapcore.DebugLevel), //console output
 	)
 	Logger = zap.New(core, zap.AddCaller())
-	//Logger = TmpLogger.Sugar() //Not used atm as I am not sure what type of logs I want
 }
 
 // getEncoder returns an encoder used for logfiles
