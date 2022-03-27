@@ -68,7 +68,7 @@ func ParseIndeedUrl(url string) string {
 	if url == "" {
 		fmt.Println("No URL found")
 	}
-	if strings.Contains(url, "fccid") == false {
+	if !strings.Contains(url, "fccid") {
 		return url
 	}
 	url = url[:strings.Index(url, "fccid")-1]

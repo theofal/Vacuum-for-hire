@@ -226,7 +226,7 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 }
 
 func ParseString(str string) string {
-	strings.Replace(str, "<NIL>", "", 1)
-	strings.Replace(str, "...", "", 1)
+	str = strings.Replace(str, "<NIL>", "", 1)
+	str = strings.Replace(str, "...", "", 1)
 	return str
 }

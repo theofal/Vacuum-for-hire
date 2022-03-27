@@ -48,9 +48,9 @@ func ParseDate(date string) string {
 		if unicode.IsDigit(v) {
 			amount += string(v)
 			//Logger.Debug("Working.. ", zap.String("Value of V", string(v)))
-		} else {
-			//Logger.Debug("Working.. ", zap.String("Value of V", string(v)))
-		}
+		} /* else {
+			Logger.Debug("Working.. ", zap.String("Value of V", string(v)))
+		}*/
 	}
 	intAmount, _ := strconv.Atoi(amount)
 	timeMinusMinutes := time.Now().Add(-time.Minute * time.Duration(intAmount))
