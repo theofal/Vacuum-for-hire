@@ -6,7 +6,6 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/robfig/cron/v3"
 	"go.uber.org/zap"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -39,7 +38,7 @@ var (
 func getDotEnvVar(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Println("Couldn't find .env find")
+		Logger.Error("Couldn't find .env find", zap.Error(err))
 	}
 	return os.Getenv(key)
 }
@@ -69,6 +68,7 @@ func ParseDate(date string) string {
 		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusHours.Day(), timeMinusHours.Month(), timeMinusHours.Year(), timeMinusHours.Hour(), timeMinusHours.Minute())
 	case strings.Contains(strings.ToLower(date), "jour"):
 		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusDays.Day(), timeMinusDays.Month(), timeMinusDays.Year(), timeMinusDays.Hour(), timeMinusDays.Minute())
+
 	}
 	return fmt.Sprintf("Couldn't parse time \"%v\".", date)
 }

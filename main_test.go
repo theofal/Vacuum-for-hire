@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "go.uber.org/zap"
+	_ "go.uber.org/zap/zapcore"
 	"strconv"
 	"strings"
 	"testing"
