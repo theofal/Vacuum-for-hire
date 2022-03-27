@@ -93,7 +93,7 @@ func (db Database) CreateTable() *error {
 }
 
 // InsertDataInTable inserts data in a given database table.
-func (db Database) InsertDataInTable(jobList []Post) *error {
+func (db Database) InsertDataInTable(jobList []Post) error {
 	Logger.Info("Inserting jobs in database.")
 	var err error
 	for i := range jobList {
@@ -102,22 +102,24 @@ func (db Database) InsertDataInTable(jobList []Post) *error {
 		// This is good to avoid SQL injections
 		if err != nil {
 			Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
+			return err
 		}
 		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].URL)
 		if err != nil {
 			Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
+			return err
 		}
 	}
 	Logger.Info("Jobs inserted in database.")
-	return &err
+	return err
 }
 
 // GetDataFromTable retrieves data from a given database table.
-func (db Database) GetDataFromTable() *error {
+func (db Database) GetDataFromTable() error {
 	row, err := db.DB.Query("SELECT * FROM JobList") //Voir ce que je veux rechercher
 	if err != nil {
 		Logger.Error("Error while querying the database.", zap.Error(err))
-		return &err
+		return err
 	}
 	defer func(row *sql.Rows) *error {
 		err := row.Close()
@@ -137,12 +139,12 @@ func (db Database) GetDataFromTable() *error {
 		var URL string
 		err := row.Scan(&JobTitle, &CompanyName, &CompanyLocation, &JobSnippet, &Date, &URL)
 		if err != nil {
-			return &err
+			return err
 		}
 		Logger.Debug("Jobs: " + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + URL)
 	}
 
-	return &err
+	return err
 }
 
 // GetTableLength returns the database table length.
@@ -178,5 +180,5 @@ func (db Database) IsSeeded() error {
 		Logger.Warn("Error while querying the database.", zap.Error(err))
 		return ErrSeedNotFound
 	}
-	return err
+	return nil
 }

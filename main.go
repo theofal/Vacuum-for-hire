@@ -91,7 +91,17 @@ func main() {
 		}
 	}(sqlDb)
 
-	Webdriver().SearchGoogle(TermToSearch)
+	_, err := Webdriver().SearchGoogle(TermToSearch)
+	// TODO : If err == ErrTimedOut -> flush ? puis relancer le code
+	if err != nil {
+		os.Exit(1)
+	}
 
-	db.InsertDataInTable(AllJobs)
+	err = db.InsertDataInTable(AllJobs)
+	if err != nil {
+		Logger.Error("Error while inserting data in table.", zap.Error(err))
+	} else {
+		// If the job has been done successfully, clear AllJobs for next use.
+		AllJobs = nil
+	}
 }

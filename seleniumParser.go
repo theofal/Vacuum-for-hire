@@ -93,7 +93,7 @@ func Webdriver() *WebDriver {
 }
 
 // SearchGoogle : selenium steps to scrap data from Google.
-func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
+func (wd *WebDriver) SearchGoogle(termToSearch string) (*[]Post, error) {
 	// Start a Selenium WebDriver server instance (if one is not already
 	// running).
 	Logger.Debug("Getting URL infos.")
@@ -117,7 +117,7 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 	Logger.Info("Navigating to Chrome website.")
 	if err := wd.Driver.Get(url); err != nil {
 		Logger.Error("Couldn't get the web page.", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 
 	// Consent to Google cookies.
@@ -125,52 +125,52 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 	acceptButton, err := wd.Driver.FindElement(selenium.ByXPATH, "//form[//span[text()=contains(., 'accepte')]]")
 	if err != nil {
 		Logger.Error("Couldn't find the Google cookies consent accept button element.", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 	Logger.Debug("Clicking Google cookies consent accept button")
 	err = acceptButton.Click()
 	if err != nil {
 		Logger.Error("Couldn't click on the Google cookies consent accept button element.", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 
 	Logger.Debug("Trying to find Google jobs location button")
 	locationButton, err := wd.Driver.FindElement(selenium.ByXPATH, "//*[@data-value='D7fiBh9u5kdglIxow4ILBA==']")
 	if err != nil {
 		Logger.Error("Couldn't find Google jobs location button", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 	Logger.Debug("Clicking on Google jobs location button", zap.String("Location", "Paris"))
 	err = locationButton.Click()
 	if err != nil {
 		Logger.Error("Couldn't click on Google jobs location button", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 
 	Logger.Debug("Getting date tab.")
 	setDateTab, err := wd.Driver.FindElement(selenium.ByXPATH, "//*[@data-facet='date_posted' and @role='tab']")
 	if err != nil {
 		Logger.Error("Couldn't find date tab element.", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 	Logger.Debug("Clicking on date tab")
 	err = setDateTab.Click()
 	if err != nil {
 		Logger.Error("Couldn't click on date tab", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 
 	Logger.Debug("Setting date range to today.")
 	setDateToday, err := wd.Driver.FindElement(selenium.ByXPATH, "//*[@data-name='today']")
 	if err != nil {
 		Logger.Error("Couldn't find date button element.", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 	Logger.Debug("Clicking on \"Today\" date button")
 	err = setDateToday.Click()
 	if err != nil {
 		Logger.Error("Couldn't click on \"Today\" date button", zap.Error(err))
-		os.Exit(1)
+		return nil, ErrTimedOut
 	}
 
 	var jobList []selenium.WebElement
@@ -223,12 +223,12 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 		tmp++
 	}
 	Logger.Info("Done finding all the jobs !", zap.String("numberOfJobs", strconv.Itoa(len(AllJobs))))
-	return &AllJobs
+	return &AllJobs, err
 }
 
 // ParseString removes recurrent unneeded substrings in Post strings.
 func ParseString(str string) string {
-	str = strings.Replace(str, "<NIL>", "", 1)
-	str = strings.Replace(str, "...", "", 1)
+	str = strings.Replace(str, "<NIL>", "", -1)
+	str = strings.Replace(str, "...", "", -1)
 	return str
 }
