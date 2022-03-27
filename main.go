@@ -6,7 +6,6 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/robfig/cron/v3"
 	"go.uber.org/zap"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -29,12 +28,8 @@ type Post struct {
 	URL             string
 }
 
-type Scrapper struct {
-}
-
 var (
 	AllJobs      []Post
-	Logger       *zap.Logger
 	TermToSearch string
 )
 
@@ -42,8 +37,7 @@ var (
 func getDotEnvVar(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalln("Error while loading .env.")
-		//Logger.Error("Couldn't find .env find", zap.Error(err))
+		Logger.Error("Couldn't find .env find", zap.Error(err))
 	}
 	return os.Getenv(key)
 }
