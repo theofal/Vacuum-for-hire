@@ -22,7 +22,8 @@ type WebDriver struct {
 	Service selenium.Service
 }
 
-func getGoogleUrl(termToSearch string) string {
+// getGoogleURL returns a URL string to search jobs in.
+func getGoogleURL(termToSearch string) string {
 	if termToSearch == "" {
 		Logger.Error("Empty termToSearch parameter: Disabled all jobs search as there would be too many elements.", zap.String("termToSearch", termToSearch))
 		os.Exit(1)
@@ -35,7 +36,7 @@ func getGoogleUrl(termToSearch string) string {
 	return url.Base + url.Term + url.Endpoint
 }
 
-// Webdriver instance
+// Webdriver instance.
 func Webdriver() *WebDriver {
 	var opts []selenium.ServiceOption
 
@@ -96,7 +97,7 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 	// Start a Selenium WebDriver server instance (if one is not already
 	// running).
 	Logger.Debug("Getting URL infos.")
-	url := getGoogleUrl(termToSearch) //termToSearch)
+	url := getGoogleURL(termToSearch) //termToSearch)
 
 	defer func(service *selenium.Service) {
 		err := service.Stop()
@@ -212,7 +213,7 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 					Date:            ParseDate(jobDate),
 					CompanyName:     ParseString(companyName),
 					CompanyLocation: ParseString(companyLocation),
-					Url:             ParseString(jobLink),
+					URL:             ParseString(jobLink),
 				})
 			index++
 
@@ -225,6 +226,7 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 	return &AllJobs
 }
 
+// ParseString removes recurrent unneeded substrings in Post strings.
 func ParseString(str string) string {
 	str = strings.Replace(str, "<NIL>", "", 1)
 	str = strings.Replace(str, "...", "", 1)

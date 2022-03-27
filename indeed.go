@@ -13,7 +13,8 @@ import (
 
 //NOT USED IN PROJECT.
 
-func GetIndeedUrl() URL {
+//GetIndeedUrl.
+func _() URL {
 	return URL{
 		"https://fr.indeed.com/jobs?q=",
 		os.Args[1],
@@ -21,7 +22,8 @@ func GetIndeedUrl() URL {
 	}
 }
 
-func IndeedScrap(url URL, f func(doc *goquery.Document) []Post) []Post {
+// IndeedScrap.
+func _(url URL, f func(doc *goquery.Document) []Post) []Post {
 	// Request the HTML page.
 	client := &http.Client{Timeout: time.Second * 20}
 	res, err := client.Get(url.Base + url.Term + url.Endpoint)
@@ -46,14 +48,15 @@ func IndeedScrap(url URL, f func(doc *goquery.Document) []Post) []Post {
 	return f(doc)
 }
 
-func GetIndeedJobs(selection *goquery.Document) []Post {
+//GetIndeedJobs.
+func _(selection *goquery.Document) []Post {
 	var post Post
 	selection.Find(".result").Each(func(i int, s *goquery.Selection) {
 		url, isVisible := s.Attr("href")
 		if !isVisible {
 			fmt.Println(fmt.Errorf("couldn't find url %v", isVisible))
 		}
-		post.Url = ParseIndeedUrl(url)
+		post.URL = ParseIndeedURL(url)
 		post.JobTitle = s.Find("h2.jobTitle>span").Text()
 		post.CompanyName = s.Find(".companyName").Text()
 		post.CompanyLocation = s.Find(".companyLocation").Text()
@@ -64,7 +67,7 @@ func GetIndeedJobs(selection *goquery.Document) []Post {
 	return AllJobs
 }
 
-func ParseIndeedUrl(url string) string {
+func ParseIndeedURL(url string) string {
 	if url == "" {
 		fmt.Println("No URL found")
 	}

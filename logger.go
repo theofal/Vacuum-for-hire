@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// InitLogger : logger initialisation
+// InitLogger : logger initialisation.
 func InitLogger() {
 	writeSyncer := getLogWriter()
 	encoder, encoderColored := getEncoder(), getColoredEncoder()
@@ -18,7 +18,7 @@ func InitLogger() {
 	Logger = zap.New(core, zap.AddCaller())
 }
 
-// getEncoder returns an encoder used for logfiles
+// getEncoder returns an encoder used for logfiles.
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
@@ -26,7 +26,7 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
-// getColoredEncoder returns a colored encoder used for console output
+// getColoredEncoder returns a colored encoder used for console output.
 func getColoredEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
@@ -34,7 +34,7 @@ func getColoredEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
-// Save file log cut
+// Save file log cut.
 func getLogWriter() zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
 		Filename:   "./logs/vacuumLogs.log", // Log name

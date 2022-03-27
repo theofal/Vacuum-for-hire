@@ -16,6 +16,8 @@ var db Database
 
 //TODO GERER LES ERREURS (ex: if err.is(blabla))
 
+// CreateDbFile checks if a 'Vacuum-database.db' file is present on the project
+// and instantiates a new seed.
 func CreateDbFile() (*Database, *sql.DB) {
 	var emptyDb bool
 
@@ -55,6 +57,7 @@ func CreateDbFile() (*Database, *sql.DB) {
 	return &db, sqliteDatabase
 }
 
+// CreateTable creates a new table in a given database.
 func (db Database) CreateTable() *error {
 	createJobTableSQL := `CREATE TABLE JobList (
 		--"ID" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -72,6 +75,13 @@ func (db Database) CreateTable() *error {
 	if err != nil {
 		Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
 	}
+	defer func(statement *sql.Stmt) {
+		err := statement.Close()
+		if err != nil {
+			Logger.Error("Error while closing the SQL statement.", zap.Error(err))
+		}
+	}(statement)
+
 	_, err = statement.Exec() // Execute SQL Statements
 	if err != nil {
 		Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
@@ -82,6 +92,7 @@ func (db Database) CreateTable() *error {
 	return &err
 }
 
+// InsertDataInTable inserts data in a given database table.
 func (db Database) InsertDataInTable(jobList []Post) *error {
 	Logger.Info("Inserting jobs in database.")
 	var err error
@@ -92,7 +103,7 @@ func (db Database) InsertDataInTable(jobList []Post) *error {
 		if err != nil {
 			Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
 		}
-		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].Url)
+		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].URL)
 		if err != nil {
 			Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
 		}
@@ -101,6 +112,7 @@ func (db Database) InsertDataInTable(jobList []Post) *error {
 	return &err
 }
 
+// GetDataFromTable retrieves data from a given database table.
 func (db Database) GetDataFromTable() *error {
 	row, err := db.DB.Query("SELECT * FROM JobList") //Voir ce que je veux rechercher
 	if err != nil {
@@ -122,17 +134,18 @@ func (db Database) GetDataFromTable() *error {
 		var CompanyLocation string
 		var JobSnippet string
 		var Date string
-		var Url string
-		err := row.Scan(&JobTitle, &CompanyName, &CompanyLocation, &JobSnippet, &Date, &Url)
+		var URL string
+		err := row.Scan(&JobTitle, &CompanyName, &CompanyLocation, &JobSnippet, &Date, &URL)
 		if err != nil {
 			return &err
 		}
-		Logger.Debug("Jobs: " + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + Url)
+		Logger.Debug("Jobs: " + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + URL)
 	}
 
 	return &err
 }
 
+// GetTableLength returns the database table length.
 func (db Database) GetTableLength() (int64, error) {
 	var tableLength int64
 	row, err := db.DB.Query("SELECT * FROM JobList") //Voir ce que je veux rechercher
@@ -147,13 +160,20 @@ func (db Database) GetTableLength() (int64, error) {
 		}
 	}(row)
 	for row.Next() { // Iterate and fetch the records from result cursor
-		tableLength += 1
+		tableLength++
 	}
 	return tableLength, err
 }
 
+// IsSeeded checks if a given database is seeded or empty.
 func (db Database) IsSeeded() error {
-	_, err := db.DB.Query("SELECT * FROM JobList")
+	row, err := db.DB.Query("SELECT * FROM JobList")
+	defer func(row *sql.Rows) {
+		err := row.Close()
+		if err != nil {
+			Logger.Error("Error while closing the SQL statement.", zap.Error(err))
+		}
+	}(row)
 	if err != nil {
 		Logger.Warn("Error while querying the database.", zap.Error(err))
 		return ErrSeedNotFound

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/joho/godotenv"
 	_ "github.com/robfig/cron/v3"
@@ -24,7 +25,7 @@ type Post struct {
 	CompanyLocation string
 	JobSnippet      string
 	Date            string
-	Url             string
+	URL             string
 }
 
 var (
@@ -33,6 +34,7 @@ var (
 	TermToSearch string
 )
 
+// getDotEnvVar returns a specific variable in the .env file.
 func getDotEnvVar(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -41,6 +43,7 @@ func getDotEnvVar(key string) string {
 	return os.Getenv(key)
 }
 
+// ParseDate returns a date in a string format to when the job post was uploaded.
 func ParseDate(date string) string {
 	var amount string
 	//Logger.Debug("Parsing date.", zap.String("Date", date))
@@ -73,10 +76,20 @@ func ParseDate(date string) string {
 func main() {
 	TermToSearch = "Golang"
 	InitLogger()
-	defer Logger.Sync()
+	defer func(Logger *zap.Logger) {
+		err := Logger.Sync()
+		if err != nil {
+			Logger.Error("Error while syncing logger.", zap.Error(err))
+		}
+	}(Logger)
 
 	db, sqlDb := CreateDbFile()
-	defer sqlDb.Close()
+	defer func(sqlDb *sql.DB) {
+		err := sqlDb.Close()
+		if err != nil {
+			Logger.Error("Error while closing sql database.", zap.Error(err))
+		}
+	}(sqlDb)
 
 	Webdriver().SearchGoogle(TermToSearch)
 
