@@ -25,8 +25,7 @@ type WebDriver struct {
 // getGoogleURL returns a URL string to search jobs in.
 func getGoogleURL(termToSearch string) string {
 	if termToSearch == "" {
-		Logger.Info("Empty termToSearch parameter: Disabled all jobs search as there would be too many elements.", zap.String("termToSearch", termToSearch))
-		os.Exit(1)
+		Logger.Fatal("Empty termToSearch parameter: Disabled all jobs search as there would be too many elements.", zap.Any("termToSearch", termToSearch))
 	}
 	url := URL{
 		"https://www.google.com/search?&q=",
