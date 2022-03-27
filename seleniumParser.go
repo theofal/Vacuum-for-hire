@@ -14,12 +14,12 @@ import (
 var (
 	chromedriverPath = getDotEnvVar("WEBDRIVER_PATH")
 	port, _          = strconv.Atoi(getDotEnvVar("PORT"))
-	Web              WebD
+	Web              WebDriver
 )
 
-type WebD struct {
-	Webdriver selenium.WebDriver
-	Service   selenium.Service
+type WebDriver struct {
+	Driver  selenium.WebDriver
+	Service selenium.Service
 }
 
 func getGoogleUrl(termToSearch string) string {
@@ -36,7 +36,7 @@ func getGoogleUrl(termToSearch string) string {
 }
 
 // Webdriver instance
-func Webdriver() *WebD {
+func Webdriver() *WebDriver {
 	var opts []selenium.ServiceOption
 
 	Logger.Info("Starting WebDriver creation.")
@@ -83,16 +83,16 @@ func Webdriver() *WebD {
 		Logger.Warn("Couldn't set elements searching timeout.", zap.Error(err))
 	}
 
-	Web.Webdriver = wd
+	Web.Driver = wd
 	Web.Service = *service
 
 	Logger.Info("WebDriver created.")
-	return &WebD{Webdriver: wd, Service: *service}
+	return &WebDriver{Driver: wd, Service: *service}
 
 }
 
 // SearchGoogle : selenium steps to scrap data from Google.
-func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
+func (wd *WebDriver) SearchGoogle(termToSearch string) *[]Post {
 	// Start a Selenium WebDriver server instance (if one is not already
 	// running).
 	Logger.Debug("Getting URL infos.")
@@ -110,18 +110,18 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 		if err != nil {
 			Logger.Error("Error while stopping the service.", zap.Error(err))
 		}
-	}(wd.Webdriver)
+	}(wd.Driver)
 
 	// Navigate to the Google jobs website.
 	Logger.Info("Navigating to Chrome website.")
-	if err := wd.Webdriver.Get(url); err != nil {
+	if err := wd.Driver.Get(url); err != nil {
 		Logger.Error("Couldn't get the web page.", zap.Error(err))
 		os.Exit(1)
 	}
 
 	// Consent to Google cookies.
 	Logger.Debug("Trying to find Google cookies consent accept button")
-	acceptButton, err := wd.Webdriver.FindElement(selenium.ByXPATH, "//form[//span[text()=contains(., 'accepte')]]")
+	acceptButton, err := wd.Driver.FindElement(selenium.ByXPATH, "//form[//span[text()=contains(., 'accepte')]]")
 	if err != nil {
 		Logger.Error("Couldn't find the Google cookies consent accept button element.", zap.Error(err))
 		os.Exit(1)
@@ -134,7 +134,7 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 	}
 
 	Logger.Debug("Trying to find Google jobs location button")
-	locationButton, err := wd.Webdriver.FindElement(selenium.ByXPATH, "//*[@data-value='D7fiBh9u5kdglIxow4ILBA==']")
+	locationButton, err := wd.Driver.FindElement(selenium.ByXPATH, "//*[@data-value='D7fiBh9u5kdglIxow4ILBA==']")
 	if err != nil {
 		Logger.Error("Couldn't find Google jobs location button", zap.Error(err))
 		os.Exit(1)
@@ -147,7 +147,7 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 	}
 
 	Logger.Debug("Getting date tab.")
-	setDateTab, err := wd.Webdriver.FindElement(selenium.ByXPATH, "//*[@data-facet='date_posted' and @role='tab']")
+	setDateTab, err := wd.Driver.FindElement(selenium.ByXPATH, "//*[@data-facet='date_posted' and @role='tab']")
 	if err != nil {
 		Logger.Error("Couldn't find date tab element.", zap.Error(err))
 		os.Exit(1)
@@ -160,7 +160,7 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 	}
 
 	Logger.Debug("Setting date range to today.")
-	setDateToday, err := wd.Webdriver.FindElement(selenium.ByXPATH, "//*[@data-name='today']")
+	setDateToday, err := wd.Driver.FindElement(selenium.ByXPATH, "//*[@data-name='today']")
 	if err != nil {
 		Logger.Error("Couldn't find date button element.", zap.Error(err))
 		os.Exit(1)
@@ -183,7 +183,7 @@ func (wd *WebD) SearchGoogle(termToSearch string) *[]Post {
 			zap.String("elementIndex", strconv.Itoa(index)),
 			zap.String("tmp value", strconv.Itoa(tmp)),
 		)
-		jobList, err = wd.Webdriver.FindElements(selenium.ByXPATH, "//*[@role='treeitem']")
+		jobList, err = wd.Driver.FindElements(selenium.ByXPATH, "//*[@role='treeitem']")
 		if err != nil {
 			Logger.Error("Couldn't find job element",
 				zap.String("elementIndex", strconv.Itoa(index)),

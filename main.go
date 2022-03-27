@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/joho/godotenv"
+	_ "github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 	"os"
 	"strconv"
@@ -27,9 +28,9 @@ type Post struct {
 }
 
 var (
-	AllJobs       []Post
-	Logger        *zap.Logger
-	ProductionEnv bool
+	AllJobs      []Post
+	Logger       *zap.Logger
+	TermToSearch string
 )
 
 func getDotEnvVar(key string) string {
@@ -70,10 +71,14 @@ func ParseDate(date string) string {
 }
 
 func main() {
+	TermToSearch = "Golang"
 	InitLogger()
 	defer Logger.Sync()
+
 	db, sqlDb := CreateDbFile()
 	defer sqlDb.Close()
-	Webdriver().SearchGoogle("Golang")
+
+	Webdriver().SearchGoogle(TermToSearch)
+
 	db.InsertDataInTable(AllJobs)
 }
