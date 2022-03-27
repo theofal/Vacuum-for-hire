@@ -8,7 +8,7 @@ import (
 )
 
 // InitLogger : logger initialisation.
-func InitLogger() {
+func InitLogger() *zap.Logger {
 	writeSyncer := getLogWriter()
 	encoder, encoderColored := getEncoder(), getColoredEncoder()
 	core := zapcore.NewTee(
@@ -16,6 +16,7 @@ func InitLogger() {
 		zapcore.NewCore(encoderColored, zapcore.AddSync(os.Stdout), zapcore.DebugLevel), //console output
 	)
 	Logger = zap.New(core, zap.AddCaller())
+	return Logger
 }
 
 // getEncoder returns an encoder used for logfiles.

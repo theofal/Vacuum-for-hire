@@ -75,7 +75,7 @@ func ParseDate(date string) string {
 
 func main() {
 	TermToSearch = "Golang"
-	InitLogger()
+	Logger = InitLogger()
 	defer func(Logger *zap.Logger) {
 		err := Logger.Sync()
 		if err != nil {
