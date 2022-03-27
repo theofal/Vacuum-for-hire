@@ -15,9 +15,9 @@ require (
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/google/go-cmp v0.4.0 // indirect
-	go.uber.org/atomic v1.7.0 // indirect
-	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
+	github.com/google/go-cmp v0.5.7 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
+	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
