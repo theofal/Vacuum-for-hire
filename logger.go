@@ -10,10 +10,10 @@ import (
 // InitLogger : logger initialisation.
 func InitLogger() *zap.Logger {
 	writeSyncer := getLogWriter()
-	encoder := getEncoder()
+	encoder, encoderColored := getEncoder(), getColoredEncoder()
 	core := zapcore.NewTee(
-		zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel),                //logfile output
-		zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel), //console output
+		zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel),                       //logfile output
+		zapcore.NewCore(encoderColored, zapcore.AddSync(os.Stdout), zapcore.DebugLevel), //console output
 	)
 	Logger = zap.New(core, zap.AddCaller())
 	return Logger
