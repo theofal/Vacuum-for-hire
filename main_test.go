@@ -1,9 +1,9 @@
 package main
 
 import (
+	"go.uber.org/zap"
 	_ "go.uber.org/zap"
 	_ "go.uber.org/zap/zapcore"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -13,10 +13,13 @@ import (
 
 func TestMain(m *testing.M) {
 	Logger = InitLogger()
-	Logger.Sync()
-	log.Println("Do stuff BEFORE the tests!")
+	err := Logger.Sync()
+	if err != nil {
+		Logger.Warn("Err", zap.Error(err))
+	}
+	// Do stuff BEFORE the tests!
 	exitVal := m.Run()
-	log.Println("Do stuff AFTER the tests!")
+	// Do stuff AFTER the tests!
 
 	os.Exit(exitVal)
 }
