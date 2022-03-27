@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/robfig/cron/v3"
 	"go.uber.org/zap"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -41,7 +42,8 @@ var (
 func getDotEnvVar(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		Logger.Error("Couldn't find .env find", zap.Error(err))
+		log.Fatalln("Error while loading .env.")
+		//Logger.Error("Couldn't find .env find", zap.Error(err))
 	}
 	return os.Getenv(key)
 }
