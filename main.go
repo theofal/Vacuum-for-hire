@@ -28,6 +28,9 @@ type Post struct {
 	URL             string
 }
 
+type Scrapper struct {
+}
+
 var (
 	AllJobs      []Post
 	Logger       *zap.Logger
