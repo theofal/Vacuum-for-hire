@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	chromedriverPath = getDotEnvVar("WEBDRIVER_PATH")
+	chromedriverPath = os.Getenv("WEBDRIVER_PATH") //getDotEnvVar("WEBDRIVER_PATH")
 	port, _          = strconv.Atoi(getDotEnvVar("PORT"))
 	Web              WebDriver
 )
@@ -93,7 +93,11 @@ func Webdriver() *WebDriver {
 }
 
 // SearchGoogle : selenium steps to scrap data from Google.
-func (wd *WebDriver) SearchGoogle(termToSearch string) (*[]Post, error) {
+func (wd *WebDriver) SearchGoogle(termToSearch string) ([]Post, error) {
+
+	var jobList []selenium.WebElement
+	var allJobs []Post
+
 	// Start a Selenium WebDriver server instance (if one is not already
 	// running).
 	Logger.Debug("Getting URL infos.")
@@ -173,8 +177,6 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) (*[]Post, error) {
 		return nil, ErrTimedOut
 	}
 
-	var jobList []selenium.WebElement
-
 	tmp, index := -1, 0
 
 	// Get the list of jobs as WebElements
@@ -207,13 +209,13 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) (*[]Post, error) {
 			jobLinkElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='pMhGee Co68jc j0vryd']")
 			jobLink, _ := jobLinkElement.GetAttribute("href")
 
-			AllJobs = append(AllJobs,
+			allJobs = append(allJobs,
 				Post{
-					JobTitle:        ParseString(jobTitle),
-					Date:            ParseDate(jobDate),
-					CompanyName:     ParseString(companyName),
-					CompanyLocation: ParseString(companyLocation),
-					URL:             ParseString(jobLink),
+					jobTitle:        parseString(jobTitle),
+					date:            ParseDate(jobDate),
+					companyName:     parseString(companyName),
+					companyLocation: parseString(companyLocation),
+					url:             parseString(jobLink),
 				})
 			index++
 
@@ -222,12 +224,13 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) (*[]Post, error) {
 		}
 		tmp++
 	}
-	Logger.Info("Done finding all the jobs !", zap.String("numberOfJobs", strconv.Itoa(len(AllJobs))))
-	return &AllJobs, err
+	fmt.Println(allJobs)
+	Logger.Info("Done finding all the jobs !", zap.String("numberOfJobs", strconv.Itoa(len(allJobs))))
+	return allJobs, err
 }
 
-// ParseString removes recurrent unneeded substrings in Post strings.
-func ParseString(str string) string {
+// parseString removes recurrent unneeded substrings in Post strings.
+func parseString(str string) string {
 	str = strings.Replace(str, "<NIL>", "", -1)
 	str = strings.Replace(str, "...", "", -1)
 	return str

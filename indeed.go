@@ -51,23 +51,24 @@ func _(url URL, f func(doc *goquery.Document) []Post) []Post {
 //GetIndeedJobs.
 func _(selection *goquery.Document) []Post {
 	var post Post
+	var allJobs []Post
 	selection.Find(".result").Each(func(i int, s *goquery.Selection) {
 		url, isVisible := s.Attr("href")
 		if !isVisible {
 			fmt.Println(fmt.Errorf("couldn't find url %v", isVisible))
 		}
-		post.URL = ParseIndeedURL(url)
-		post.JobTitle = s.Find("h2.jobTitle>span").Text()
-		post.CompanyName = s.Find(".companyName").Text()
-		post.CompanyLocation = s.Find(".companyLocation").Text()
-		post.JobSnippet = s.Find(".job-snippet>ul>li").Text()
-		post.Date = ParseDate(s.Find(".date").Text())
-		AllJobs = append(AllJobs, post)
+		post.url = parseIndeedURL(url)
+		post.jobTitle = s.Find("h2.jobTitle>span").Text()
+		post.companyName = s.Find(".companyName").Text()
+		post.companyLocation = s.Find(".companyLocation").Text()
+		post.jobSnippet = s.Find(".job-snippet>ul>li").Text()
+		post.date = ParseDate(s.Find(".date").Text())
+		allJobs = append(allJobs, post)
 	})
-	return AllJobs
+	return allJobs
 }
 
-func ParseIndeedURL(url string) string {
+func parseIndeedURL(url string) string {
 	if url == "" {
 		fmt.Println("No URL found")
 	}

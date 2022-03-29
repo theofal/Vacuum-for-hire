@@ -42,13 +42,13 @@ func TestWebdriver(t *testing.T) {
 }
 
 func TestParseString(t *testing.T) {
-	got := ParseString("DAYUM...<NIL>")
+	got := parseString("DAYUM...<NIL>")
 	want := "DAYUM"
 	if got != want {
 		t.Errorf("TestWebdriver FAILED : want %v, got %v.\n", want, got)
 	}
 
-	got = ParseString("<NIL>...<NIL>DAYUM...<NIL>...")
+	got = parseString("<NIL>...<NIL>DAYUM...<NIL>...")
 	want = "DAYUM"
 	if got != want {
 		t.Errorf("TestWebdriver FAILED : want %v, got %v.\n", want, got)

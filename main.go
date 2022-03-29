@@ -19,17 +19,7 @@ type URL struct {
 	Endpoint string
 }
 
-type Post struct {
-	JobTitle        string
-	CompanyName     string
-	CompanyLocation string
-	JobSnippet      string
-	Date            string
-	URL             string
-}
-
 var (
-	AllJobs      []Post
 	TermToSearch string
 )
 
@@ -73,6 +63,7 @@ func ParseDate(date string) string {
 }
 
 func main() {
+
 	TermToSearch = "Golang"
 	Logger = InitLogger()
 	defer func(Logger *zap.Logger) {
@@ -90,17 +81,17 @@ func main() {
 		}
 	}(sqlDb)
 
-	_, err := Webdriver().SearchGoogle(TermToSearch)
+	allJobs, err := Webdriver().SearchGoogle(TermToSearch)
 	// TODO : If err == ErrTimedOut -> flush ? puis relancer le code
 	if err != nil {
 		os.Exit(1)
 	}
 
-	err = db.InsertDataInTable(AllJobs)
+	err = db.InsertDataInTable(allJobs)
 	if err != nil {
 		Logger.Error("Error while inserting data in table.", zap.Error(err))
 	} else {
-		// If the job has been done successfully, clear AllJobs for next use.
-		AllJobs = nil
+		// If the job has been done successfully, clear allJobs for next use.
+		allJobs = nil
 	}
 }
