@@ -72,9 +72,8 @@ jobs:
 
       - name: Install Chrome
         run: |
-          pwd
-          chmod +x ./utils/linux/InstallChrome.sh
-          ./utils/linux/InstallChrome.sh
+          chmod +x /home/runner/work/Vacuum-for-hire/Vacuum-for-hire/utils/linux/InstallChrome.sh
+          ./home/runner/work/Vacuum-for-hire/Vacuum-for-hire/utils/linux/InstallChrome.sh
 
       - name: Go Tests
         run: go test -v
