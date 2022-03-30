@@ -61,12 +61,12 @@ jobs:
         with:
           go-version: 1.17
 
-      name: Create env file
-      run: |
-        touch .env
-        echo TEST_ARG=${{ secrets.TEST_ARG }} >> .env
-        echo WEBDRIVER_PATH=${{ secrets.WEBDRIVER_PATH }} >> .env
-        echo PORT=${{ secrets.PORT }}
+      - name: Create env file
+        run: |
+          touch .env
+          echo TEST_ARG=${{ secrets.TEST_ARG }} >> .env
+          echo WEBDRIVER_PATH=${{ secrets.WEBDRIVER_PATH }} >> .env
+          echo PORT=${{ secrets.PORT }}
 
       - name: Go Tests
         run: go test -v
