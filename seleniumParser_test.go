@@ -57,11 +57,11 @@ func TestParseString(t *testing.T) {
 
 func TestSearchGoogle(t *testing.T) {
 	TermToSearch = "Golang"
-	Webdriver().SearchGoogle(TermToSearch)
-	if len(AllJobs) <= 0 || AllJobs == nil {
+	allJobs, _ := Webdriver().SearchGoogle(TermToSearch)
+	if len(allJobs) <= 0 || allJobs == nil {
 		t.Errorf("Empty or nil list of jobs")
 	}
-	if AllJobs[0].JobTitle == "<NIL>" {
+	if allJobs[0].JobTitle() == "<NIL>" {
 		t.Errorf("Got <NIL> jobtitle from the first element of AllJobs")
 	}
 }

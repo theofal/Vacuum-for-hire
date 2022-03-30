@@ -5,7 +5,7 @@ endif
 
 # LOCAL
 run:
-	go run  $(PROJECT_PATH) WEBDRIVER_PATH=/Users/theofalgayrettes/GolandProjects/Vacuum-for-hire/Utils/macos/chromedriver
+	go run  $(PROJECT_PATH) $(WEBDRIVER_PATH)
 update-dependencies:
 	go get -u $(PROJECT_PATH)/...
 verify-dependencies:
@@ -15,4 +15,10 @@ verify-dependencies:
 build-docker:
 	docker build -t vacuum-for-hire .
 run-docker:
-	docker run -it --rm --name my-running-app vacuum-for-hire
+	docker run -it --rm --name vacuum-for-hire vacuum-for-hire
+shell-docker:
+	docker container run -it vacuum-for-hire /bin/bash
+docker-clean-images:
+	pushd utils/ && \
+	./clean.sh && \
+	sh popd

@@ -1,6 +1,6 @@
 FROM golang:1.18
 
-ENV WEBDRIVER_PATH="/usr/src/app/Utils/linux/chromedriver"
+ENV WEBDRIVER_PATH="/usr/src/app/utils/linux/chromedriver"
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list

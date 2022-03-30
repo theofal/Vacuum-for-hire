@@ -8,6 +8,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/rs/zerolog v1.26.1
 	github.com/tebeka/selenium v0.9.9
 	go.uber.org/zap v1.21.0
 )

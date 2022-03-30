@@ -50,22 +50,24 @@ jobs:
         run: golint ./...
 
 # Bug in github actions, Logger points to a nil reference
-#  Test:
-#    runs-on: ubuntu-latest
-#      # Steps represent a sequence of tasks that will be executed as part of the job
-#    steps:
-#      - uses: actions/checkout@v2
-#      # Installs Go version 1.18 on the runner
-#      - name: Set up Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: 1.17
-#
+  Test:
+    runs-on: ubuntu-latest
+      # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+      # Installs Go version 1.18 on the runner
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
 #      name: Create env file
 #        run: |
 #          touch .env
 #          echo API_ENDPOINT="https://xxx.execute-api.us-west-2.amazonaws.com" >> .env
 #          echo API_KEY=${{ secrets.API_KEY }} >> .env
-#
-#      - name: Go Tests
-#        run: go test -v
+      - name: Dotenv Action
+        uses: falti/dotenv-action@v0.2.7
+
+      - name: Go Tests
+        run: go test -v

@@ -7,7 +7,9 @@ import (
 	"os"
 )
 
-var Logger *zap.Logger
+var (
+	Logger *zap.Logger
+)
 
 // InitLogger : logger initialisation.
 func InitLogger() *zap.Logger {
