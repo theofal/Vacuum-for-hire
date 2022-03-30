@@ -90,8 +90,9 @@ func main() {
 	err = db.InsertDataInTable(allJobs)
 	if err != nil {
 		Logger.Error("Error while inserting data in table.", zap.Error(err))
-	} else {
-		// If the job has been done successfully, clear allJobs for next use.
-		allJobs = nil
 	}
 }
+
+// API ?
+//1er cron qui lance le job et qui declenche un webhook
+//webhook pour executer un cron qui va récupérer les données de la db et la mettre en ligne

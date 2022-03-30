@@ -22,7 +22,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Installs Go version 1.18 on the runner
+      # Installs Go version 1.17 on the runner
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -49,7 +49,7 @@ jobs:
       - name: Run golint
         run: golint ./...
 
-# Bug in github actions, Logger points to a nil reference
+# TODO bug in github actions, screen size seems to be too small
   Test:
     env:
       WEBDRIVER_PATH: ${{ secrets.WEBDRIVER_PATH }}
@@ -63,13 +63,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
-
-      - name: Create env file
-        run: |
-          touch .env
-          echo TEST_ARG=${{ secrets.TEST_ARG }} >> .env
-          echo WEBDRIVER_PATH=${{ secrets.WEBDRIVER_PATH }} >> .env
-          echo PORT=${{ secrets.PORT }}
 
       - name: Install Chrome
         run: |

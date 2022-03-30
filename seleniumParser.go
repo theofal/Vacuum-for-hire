@@ -59,7 +59,8 @@ func Webdriver() *WebDriver {
 		Args: []string{
 			"--headless",
 			"--no-sandbox",
-			"--window-size=1920,1080",
+			"--start-fullscreen",
+			//"--window-size=1920,1080",
 			"--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0.2 Safari/604.4.7",
 		},
 	}
@@ -198,15 +199,15 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) ([]Post, error) {
 			if err != nil {
 				Logger.Warn("couldn't click on job element", zap.String("elementIndex", strconv.Itoa(index)), zap.Error(err))
 			}
-			jobTitleElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='KLsYvd']")
+			jobTitleElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//*[@id='tl_ditsc']//*[@class='KLsYvd']")
 			jobTitle, _ := jobTitleElement.Text()
-			jobDateElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='LL4CDc']")
+			jobDateElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//*[@id='tl_ditsc']//*[@class='LL4CDc']")
 			jobDate, _ := jobDateElement.GetAttribute("aria-label")
-			companyElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='nJlQNd sMzDkb']")
+			companyElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//*[@id='tl_ditsc']//*[@class='nJlQNd sMzDkb']")
 			companyName, _ := companyElement.Text()
-			locationElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@class='Qk80Jf'][1]")
+			locationElement, _ := jobList[index].FindElements(selenium.ByXPATH, "//*[@class='Qk80Jf'][1]")
 			companyLocation, _ := locationElement[index].Text()
-			jobLinkElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//body[*[*[div[@class='gb_Fc gb_Dc gb_Kc']]]]//*[@id='tl_ditsc']//*[@class='pMhGee Co68jc j0vryd']")
+			jobLinkElement, _ := jobList[index].FindElement(selenium.ByXPATH, "//*[@id='tl_ditsc']//*[@class='pMhGee Co68jc j0vryd']")
 			jobLink, _ := jobLinkElement.GetAttribute("href")
 
 			allJobs = append(allJobs,

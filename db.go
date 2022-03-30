@@ -147,26 +147,6 @@ func (db Database) GetDataFromTable() error {
 	return err
 }
 
-// GetTableLength returns the database table length.
-func (db Database) GetTableLength() (int64, error) {
-	var tableLength int64
-	row, err := db.DB.Query("SELECT * FROM JobList") //Voir ce que je veux rechercher
-	if err != nil {
-		Logger.Warn("Error while querying the database.", zap.Error(err))
-		return 0, ErrSeedNotFound
-	}
-	defer func(row *sql.Rows) {
-		err := row.Close()
-		if err != nil {
-			Logger.Error("Error while closing DB row query.", zap.Error(err))
-		}
-	}(row)
-	for row.Next() { // Iterate and fetch the records from result cursor
-		tableLength++
-	}
-	return tableLength, err
-}
-
 // IsSeeded checks if a given database is seeded or empty.
 func (db Database) IsSeeded() error {
 	row, err := db.DB.Query("SELECT * FROM JobList")
