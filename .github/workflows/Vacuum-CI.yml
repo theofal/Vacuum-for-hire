@@ -65,12 +65,16 @@ jobs:
 
       - name: Create env file
         run: |
-          pwd
-          ls
           touch .env
           echo TEST_ARG=${{ secrets.TEST_ARG }} >> .env
           echo WEBDRIVER_PATH=${{ secrets.WEBDRIVER_PATH }} >> .env
           echo PORT=${{ secrets.PORT }}
+
+      - name: Install Chrome
+        run: |
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - 
+          echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+          apt-get update && apt-get -y install google-chrome-stable
 
       - name: Go Tests
         run: go test -v
