@@ -19,6 +19,4 @@ run-docker:
 shell-docker:
 	docker container run -it vacuum-for-hire /bin/bash
 docker-clean-images:
-	pushd utils/ && \
-	./clean.sh && \
-	sh popd
+	./utils/clean.sh
