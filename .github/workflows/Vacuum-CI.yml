@@ -51,6 +51,8 @@ jobs:
 
 # Bug in github actions, Logger points to a nil reference
   Test:
+    env:
+      WEBDRIVER_PATH: ${{ secrets.WEBDRIVER_PATH }}
     runs-on: ubuntu-latest
       # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
