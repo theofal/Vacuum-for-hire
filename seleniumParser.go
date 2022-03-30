@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	chromedriverPath = os.Getenv("WEBDRIVER_PATH") //getDotEnvVar("WEBDRIVER_PATH")
+	chromedriverPath = os.Getenv("WEBDRIVER_PATH")
 	port, _          = strconv.Atoi(os.Getenv("PORT"))
 	Web              WebDriver
 )

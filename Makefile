@@ -18,5 +18,5 @@ run-docker:
 	docker run -it --rm --name vacuum-for-hire vacuum-for-hire
 shell-docker:
 	docker container run -it vacuum-for-hire /bin/bash
-docker-clean-images:
+clean-docker-images:
 	./utils/clean.sh
