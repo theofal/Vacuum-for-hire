@@ -6,6 +6,8 @@ endif
 # LOCAL
 run:
 	go run  $(PROJECT_PATH) $(WEBDRIVER_PATH) $(PORT)
+test:
+	go test -v --cover
 update-dependencies:
 	go get -u $(PROJECT_PATH)/...
 verify-dependencies:
