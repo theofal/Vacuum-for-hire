@@ -49,16 +49,16 @@ jobs:
       - name: Run golint
         run: golint ./...
 
-# TODO bug in github actions, screen size seems to be too small
+# TODO bug in github actions, screen size seems to be too small ?
   Test:
     env:
       WEBDRIVER_PATH: ${{ secrets.WEBDRIVER_PATH }}
       PORT: ${{ secrets.PORT }}
     runs-on: ubuntu-latest
-      # Steps represent a sequence of tasks that will be executed as part of the job
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
-      # Installs Go version 1.18 on the runner
+      # Installs Go version 1.17 on the runner
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
