@@ -19,7 +19,8 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-func TestGetDotEnvVar(t *testing.T) {
+// TestGetDotEnvVar
+func _(t *testing.T) {
 	result := getDotEnvVar("TEST_ARG")
 	if result != "BrUh" {
 		t.Errorf("FAIL: Expected %v, got %v", "BrUh", result)

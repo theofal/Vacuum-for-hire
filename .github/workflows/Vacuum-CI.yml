@@ -31,6 +31,11 @@ jobs:
       - name: Verify dependencies
         run: go mod verify
 
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
       - name: Build project
         run: go build -v ./...
 
