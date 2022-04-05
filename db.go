@@ -60,7 +60,6 @@ func CreateDbFile() (*Database, *sql.DB) {
 // CreateTable creates a new table in a given database.
 func (db Database) CreateTable() *error {
 	createJobTableSQL := `CREATE TABLE JobList (
-		--"ID" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 		"SearchedTerm" TEXT,
 		"JobTitle" TEXT,
 		"CompanyName" TEXT,
@@ -114,12 +113,14 @@ func (db Database) InsertDataInTable(jobList []Post) error {
 	return err
 }
 
-// GetDataFromTable retrieves data from a given database table.
-func (db Database) GetDataFromTable() error {
-	row, err := db.DB.Query("SELECT * FROM JobList") //Voir ce que je veux rechercher
+// GetDataSinceSpecificDate retrieves data from a given database table.
+func (db Database) GetDataSinceSpecificDate(dateInput string) ([]Post, error) {
+	var allJobs []Post
+
+	row, err := db.DB.Query("SELECT * FROM JobList WHERE Date < ?", dateInput)
 	if err != nil {
 		Logger.Error("Error while querying the database.", zap.Error(err))
-		return err
+		return nil, err
 	}
 	defer func(row *sql.Rows) *error {
 		err := row.Close()
@@ -131,20 +132,29 @@ func (db Database) GetDataFromTable() error {
 	}(row)
 
 	for row.Next() { // Iterate and fetch the records from result cursor
+		var SearchedTerm string
 		var JobTitle string
 		var CompanyName string
 		var CompanyLocation string
 		var JobSnippet string
 		var Date string
 		var URL string
-		err := row.Scan(&JobTitle, &CompanyName, &CompanyLocation, &JobSnippet, &Date, &URL)
+		err := row.Scan(&SearchedTerm, &JobTitle, &CompanyName, &CompanyLocation, &JobSnippet, &Date, &URL)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		Logger.Debug("Jobs: " + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + URL)
+		allJobs = append(allJobs,
+			Post{
+				jobTitle:        JobTitle,
+				date:            Date,
+				companyName:     CompanyName,
+				companyLocation: CompanyLocation,
+				url:             URL,
+			})
+		Logger.Debug("Jobs: " + SearchedTerm + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + URL)
 	}
 
-	return err
+	return allJobs, err
 }
 
 // IsSeeded checks if a given database is seeded or empty.

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go.uber.org/zap"
 	_ "go.uber.org/zap"
 	_ "go.uber.org/zap/zapcore"
 	"os"
@@ -12,6 +13,9 @@ import (
 
 func TestMain(m *testing.M) {
 	Logger = InitLogger()
+	defer func(Logger *zap.Logger) {
+		_ = Logger.Sync()
+	}(Logger)
 	// Do stuff BEFORE the tests!
 	exitVal := m.Run()
 	// Do stuff AFTER the tests!

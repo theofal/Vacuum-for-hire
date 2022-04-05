@@ -61,6 +61,7 @@ func Webdriver() *WebDriver {
 			"--no-sandbox",
 			//"--start-fullscreen",
 			"--window-size=1920,1080",
+			"--disable-dev-shm-usage",
 			"--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0.2 Safari/604.4.7",
 		},
 	}

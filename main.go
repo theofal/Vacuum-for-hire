@@ -35,44 +35,39 @@ func getDotEnvVar(key string) string {
 // ParseDate returns a date in a string format to when the job post was uploaded.
 func ParseDate(date string) string {
 	var amount string
-	//Logger.Debug("Parsing date.", zap.String("Date", date))
+	Logger.Debug("Parsing date.", zap.String("Date", date))
 	for _, v := range date {
 		if unicode.IsDigit(v) {
 			amount += string(v)
-			//Logger.Debug("Working.. ", zap.String("Value of V", string(v)))
-		} /* else {
-			Logger.Debug("Working.. ", zap.String("Value of V", string(v)))
-		}*/
+		}
 	}
 	intAmount, _ := strconv.Atoi(amount)
-	timeMinusMinutes := time.Now().Add(-time.Minute * time.Duration(intAmount))
-	timeMinusHours := time.Now().Add(-time.Hour * time.Duration(intAmount))
-	timeMinusDays := time.Now().AddDate(0, 0, -2)
+	timeMinusMinutes := time.Now().Add(-time.Minute * time.Duration(intAmount)).Format("02/01/2006 15:04")
+	timeMinusHours := time.Now().Add(-time.Hour * time.Duration(intAmount)).Format("02/01/2006 15:04")
+	timeMinusDays := time.Now().AddDate(0, 0, -2).Format("02/01/2006 15:04")
 	switch {
 	case date == "PostedPubliée à l'instant" || date == "PostedAujourd'hui":
-		return fmt.Sprintf("%d/%d/%d", time.Now().Day(), time.Now().Month(), time.Now().Year())
+		return time.Now().Format("02/01/2006 15:04")
 	case strings.Contains(strings.ToLower(date), "minute"):
-		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusMinutes.Day(), timeMinusMinutes.Month(), timeMinusMinutes.Year(), timeMinusMinutes.Hour(), timeMinusMinutes.Minute())
+		return timeMinusMinutes
 	case strings.Contains(strings.ToLower(date), "heure"):
-		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusHours.Day(), timeMinusHours.Month(), timeMinusHours.Year(), timeMinusHours.Hour(), timeMinusHours.Minute())
+		return timeMinusHours
 	case strings.Contains(strings.ToLower(date), "jour"):
-		return fmt.Sprintf("%v/%v/%v at %v:%v\n", timeMinusDays.Day(), timeMinusDays.Month(), timeMinusDays.Year(), timeMinusDays.Hour(), timeMinusDays.Minute())
-
+		return timeMinusDays
 	}
 	return fmt.Sprintf("Couldn't parse time \"%v\".", date)
 }
 
 func main() {
 
+	//Logger initialisation
 	TermToSearch = "Golang"
 	Logger = InitLogger()
 	defer func(Logger *zap.Logger) {
-		err := Logger.Sync()
-		if err != nil {
-			Logger.Error("Error while syncing logger.", zap.Error(err))
-		}
+		_ = Logger.Sync()
 	}(Logger)
 
+	//DB initialisation
 	db, sqlDb := CreateDbFile()
 	defer func(sqlDb *sql.DB) {
 		err := sqlDb.Close()
@@ -81,16 +76,28 @@ func main() {
 		}
 	}(sqlDb)
 
+	//Selenium instantiation + google search
 	allJobs, err := Webdriver().SearchGoogle(TermToSearch)
 	// TODO : If err == ErrTimedOut -> flush ? puis relancer le code
 	if err != nil {
 		os.Exit(1)
 	}
 
+	//Data insertion in database
 	err = db.InsertDataInTable(allJobs)
 	if err != nil {
 		Logger.Error("Error while inserting data in table.", zap.Error(err))
 	}
+
+	//Retrieving data from DB
+	listOfJobs, err := db.GetDataSinceSpecificDate("08-02-2022")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(listOfJobs)
+
+	//CSV data insertion
+	//insert listOfJobs content
 }
 
 // API ?

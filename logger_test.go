@@ -1,7 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 // TODO TESTS LOGGER
 func TestInitLogger(t *testing.T) {
+
 }
