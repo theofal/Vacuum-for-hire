@@ -6,4 +6,3 @@ logs/
 .env
 *.log
 *.db
-vacuumforhire*
