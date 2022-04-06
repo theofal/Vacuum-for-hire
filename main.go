@@ -68,7 +68,7 @@ func main() {
 	}(Logger)
 
 	//DB initialisation
-	db, sqlDb := CreateDbFile()
+	db, sqlDb := GetDbFile()
 	defer func(sqlDb *sql.DB) {
 		err := sqlDb.Close()
 		if err != nil {

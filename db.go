@@ -16,9 +16,9 @@ var db Database
 
 //TODO GERER LES ERREURS (ex: if err.is(blabla))
 
-// CreateDbFile checks if a 'Vacuum-database.db' file is present on the project
+// GetDbFile checks if a 'Vacuum-database.db' file is present on the project
 // and instantiates a new seed.
-func CreateDbFile() (*Database, *sql.DB) {
+func GetDbFile() (*Database, *sql.DB) {
 	var emptyDb bool
 
 	_, err := os.Stat("vacuum-database.db")
@@ -113,11 +113,11 @@ func (db Database) InsertDataInTable(jobList []Post) error {
 	return err
 }
 
-// GetDataSinceSpecificDate retrieves data from a given database table.
+// GetDataSinceSpecificDate retrieves data (posterior to an input date) from a given database table.
 func (db Database) GetDataSinceSpecificDate(dateInput string) ([]Post, error) {
 	var allJobs []Post
 
-	row, err := db.DB.Query("SELECT * FROM JobList WHERE Date < ?", dateInput)
+	row, err := db.DB.Query("SELECT * FROM JobList WHERE Date < ? ORDER BY Date DESC", dateInput)
 	if err != nil {
 		Logger.Error("Error while querying the database.", zap.Error(err))
 		return nil, err
