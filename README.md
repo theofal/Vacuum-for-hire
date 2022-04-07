@@ -4,7 +4,7 @@
   - Google jobs
 - Enregistrement dans une DB SQLITE
 - Récupération des données depuis la db
-- Mise en place d'une API hébergée temporairement en local (le temps de récupérer les données -> webhook pour savoir quand arreter ?)
+- Mise en place d'une API hébergée temporairement en local (le temps de récupérer les données -> webhook/channel pour savoir quand arreter ?)
 - Recuperation des données via l'API et enregistrement sur un fichier CSV
 - Stack : Go, API, Scrapping Selenium/Goquery, Docker, SQlite3
 

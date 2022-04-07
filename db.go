@@ -12,7 +12,7 @@ type Database struct {
 	DB *sql.DB
 }
 
-var db Database
+var Db Database
 
 //TODO GERER LES ERREURS (ex: if err.is(blabla))
 
@@ -39,27 +39,28 @@ func GetDbFile() (*Database, *sql.DB) {
 	sqliteDatabase, _ := sql.Open("sqlite3", "./vacuum-database.db") // Open the created SQLite File
 	Logger.Info("Database opened.")
 
-	db.DB = sqliteDatabase
+	Db.DB = sqliteDatabase
 
 	if emptyDb {
-		db.CreateTable()
+		Db.CreateTable()
 	}
 
-	err = db.IsSeeded()
+	err = Db.IsSeeded()
 	if err != nil {
 		if errors.Is(ErrSeedNotFound, err) {
-			db.CreateTable()
+			Db.CreateTable()
 		} else {
 			Logger.Error("Error while verifying db seed.", zap.Error(err))
 		}
 	}
 
-	return &db, sqliteDatabase
+	return &Db, sqliteDatabase
 }
 
 // CreateTable creates a new table in a given database.
 func (db Database) CreateTable() *error {
 	createJobTableSQL := `CREATE TABLE JobList (
+    	"ID" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"SearchedTerm" TEXT,
 		"JobTitle" TEXT,
 		"CompanyName" TEXT,
@@ -113,11 +114,11 @@ func (db Database) InsertDataInTable(jobList []Post) error {
 	return err
 }
 
-// GetDataSinceSpecificDate retrieves data (posterior to an input date) from a given database table.
-func (db Database) GetDataSinceSpecificDate(dateInput string) ([]Post, error) {
+// GetDataSinceSpecificID retrieves data (posterior to an input date) from a given database table.
+func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 	var allJobs []Post
 
-	row, err := db.DB.Query("SELECT * FROM JobList WHERE Date < ? ORDER BY Date DESC", dateInput)
+	row, err := db.DB.Query("SELECT * FROM JobList WHERE ROWID > ? ORDER BY Date DESC", ID)
 	if err != nil {
 		Logger.Error("Error while querying the database.", zap.Error(err))
 		return nil, err
@@ -132,6 +133,7 @@ func (db Database) GetDataSinceSpecificDate(dateInput string) ([]Post, error) {
 	}(row)
 
 	for row.Next() { // Iterate and fetch the records from result cursor
+		var ID string
 		var SearchedTerm string
 		var JobTitle string
 		var CompanyName string
@@ -139,12 +141,13 @@ func (db Database) GetDataSinceSpecificDate(dateInput string) ([]Post, error) {
 		var JobSnippet string
 		var Date string
 		var URL string
-		err := row.Scan(&SearchedTerm, &JobTitle, &CompanyName, &CompanyLocation, &JobSnippet, &Date, &URL)
+		err := row.Scan(&ID, &SearchedTerm, &JobTitle, &CompanyName, &CompanyLocation, &JobSnippet, &Date, &URL)
 		if err != nil {
 			return nil, err
 		}
 		allJobs = append(allJobs,
 			Post{
+				id:              ID,
 				jobTitle:        JobTitle,
 				date:            Date,
 				companyName:     CompanyName,

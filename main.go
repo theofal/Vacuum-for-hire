@@ -76,28 +76,34 @@ func main() {
 		}
 	}(sqlDb)
 
-	//Selenium instantiation + google search
-	allJobs, err := Webdriver().SearchGoogle(TermToSearch)
-	// TODO : If err == ErrTimedOut -> flush ? puis relancer le code
-	if err != nil {
-		os.Exit(1)
-	}
+	/*	//Selenium instantiation + google search
+		allJobs, err := Webdriver().SearchGoogle(TermToSearch)
+		// TODO : If err == ErrTimedOut -> flush ? puis relancer le code
+		if err != nil {
+			os.Exit(1)
+		}
 
-	//Data insertion in database
-	err = db.InsertDataInTable(allJobs)
-	if err != nil {
-		Logger.Error("Error while inserting data in table.", zap.Error(err))
-	}
+		//Data insertion in database
+		err = db.InsertDataInTable(allJobs)
+		if err != nil {
+			Logger.Error("Error while inserting data in table.", zap.Error(err))
+		}*/
 
 	//Retrieving data from DB
-	listOfJobs, err := db.GetDataSinceSpecificDate("08-02-2022")
+	listOfJobs, err := db.GetDataSinceSpecificID(4)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(listOfJobs)
+
+	// Transforming Post struct into array of array
+	allJobs := make([]interface{}, 0)
+	for i := 0; i < len(listOfJobs); i++ {
+		arrayOfJobs := ParseStructToArray(listOfJobs[i])
+		allJobs = append(allJobs, arrayOfJobs)
+	}
+	fmt.Println(allJobs)
 
 	//CSV data insertion
-	//insert listOfJobs content
 }
 
 // API ?

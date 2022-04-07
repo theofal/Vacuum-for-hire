@@ -1,12 +1,19 @@
 package main
 
+import "reflect"
+
 type Post struct {
+	id              string
 	jobTitle        string
 	companyName     string
 	companyLocation string
 	jobSnippet      string
 	date            string
 	url             string
+}
+
+func (post *Post) ID() string {
+	return post.id
 }
 
 func (post *Post) CompanyName() string {
@@ -31,4 +38,13 @@ func (post *Post) Date() string {
 
 func (post *Post) URL() string {
 	return post.url
+}
+
+func ParseStructToArray(post interface{}) []interface{} {
+	dataValue := reflect.ValueOf(post)
+	dataArray := make([]interface{}, dataValue.NumField())
+	for i := 0; i < dataValue.NumField(); i++ {
+		dataArray[i] = dataValue.Field(i)
+	}
+	return dataArray
 }
