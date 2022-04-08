@@ -15,8 +15,11 @@ type CsvFile struct {
 }
 
 // GetCsvFile verifies if the csv file exists on the project and opens it. If none, it creates one.
-func GetCsvFile(fileName string) CsvFile {
-	//fileName := "Vacuum-for-hire.csv"
+func GetCsvFile() CsvFile {
+	fileName := "Vacuum-for-hire.csv"
+	if os.Getenv("DEV_ENV") == "test" {
+		fileName = "test-csv-file.csv"
+	}
 	_, err := os.Stat(fileName)
 	if err != nil {
 		Logger.Info("No existing CSV file found, creating a new one.")
@@ -30,7 +33,8 @@ func GetCsvFile(fileName string) CsvFile {
 		}
 	}
 
-	csvFile, err := os.Open(fileName)
+	Logger.Info("Opening csv file.")
+	csvFile, err := os.OpenFile(fileName, os.O_APPEND|os.O_RDWR, os.ModeAppend)
 	if err != nil {
 		Logger.Fatal("An error occurred while opening CSV file.", zap.Error(err))
 	}
@@ -49,7 +53,7 @@ func GetCsvFile(fileName string) CsvFile {
 	}
 }
 
-// IsSeeded Seed le CSV avec la top barre.
+// IsSeeded verifies if the csv file contains data and fills it with the top bar.
 func (file CsvFile) IsSeeded() bool {
 	record := []string{"ID", "JobTitle", "CompanyName", "CompanyLocation", "JobSnippet", "Date", "URL"}
 	if len(file.Content) == 0 {
@@ -70,7 +74,7 @@ func (file CsvFile) IsSeeded() bool {
 }
 
 // getIdColumnIndex returns the index of the "date" column.
-func (file CsvFile) getIdColumnIndex() (int, error) {
+func (file CsvFile) getIDColumnIndex() (int, error) {
 	Logger.Debug("Trying to retrieve ID column index.")
 	if len(file.Content) > 0 {
 		for i := 0; i < len(file.Content[0]); i++ {
@@ -84,25 +88,26 @@ func (file CsvFile) getIdColumnIndex() (int, error) {
 	return 0, ErrEmptyFile
 }
 
-//récupérer l'ID du dernier import
+//getLastImportID retrieves the most recent ID from the CSV file and returns it.
 func (file CsvFile) getLastImportID() int {
-	maxId := 0
-	columnIndex, err := file.getIdColumnIndex()
+	maxID := 0
+	file.IsSeeded()
+	columnIndex, err := file.getIDColumnIndex()
 	if err != nil {
 		return 0
 	}
 	for i := 0; i < len(file.Content); i++ {
 		postID, _ := strconv.Atoi(file.Content[i][columnIndex])
-		if postID > maxId {
-			maxId = postID
+		if postID > maxID {
+			maxID = postID
 		}
 	}
-	return maxId
+	return maxID
 }
 
 //get json data
 
-//Insérer les données dans le csv
+//importMissingData synchronises the DB and the csv file by adding missing data to it.
 func (file CsvFile) importMissingData(content [][]string) error {
 	Logger.Debug("Trying to write data in CSV file. ")
 	err := file.Writer.WriteAll(content)

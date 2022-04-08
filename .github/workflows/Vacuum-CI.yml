@@ -68,20 +68,14 @@ jobs:
     env:
       WEBDRIVER_PATH: ${{ secrets.WEBDRIVER_PATH }}
       PORT: ${{ secrets.PORT }}
+      DEV_ENV: test
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
-      # Installs Go version 1.17 on the runner
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.18
 
-      - name: Install Chrome
-        run: |
-          chmod +x ./utils/linux/install-chrome.sh
-          ./utils/linux/install-chrome.sh
+      - name: Build docker images
+        run: docker build -t local < ./Dockerfile
 
-      - name: Go Tests
-        run: go test -v
+      - name: Run tests
+        run: docker run -it local make test

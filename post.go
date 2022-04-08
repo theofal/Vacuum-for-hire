@@ -40,11 +40,13 @@ func (post *Post) URL() string {
 	return post.url
 }
 
-func ParseStructToArray(post interface{}) []interface{} {
+//ParseStructToArray parses an interface to a list of strings.
+func ParseStructToArray(post interface{}) []string {
 	dataValue := reflect.ValueOf(post)
-	dataArray := make([]interface{}, dataValue.NumField())
+	dataArray := make([]string, dataValue.NumField())
 	for i := 0; i < dataValue.NumField(); i++ {
-		dataArray[i] = dataValue.Field(i)
+		dataArray[i] = dataValue.Field(i).String()
 	}
+
 	return dataArray
 }

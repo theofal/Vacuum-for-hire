@@ -7,7 +7,8 @@ import (
 	"strconv"
 )
 
-func initAPIServer() *gin.Engine {
+//InitAPIServer initialises a new API server.
+func _() *gin.Engine {
 	router := gin.Default()
 
 	v1 := router.Group("/api/")
@@ -22,6 +23,7 @@ func initAPIServer() *gin.Engine {
 	return router
 }
 
+//getAllPostsSinceLastID returns the list of posts where their ID is superior to the given ID.
 func getAllPostsSinceLastID(context *gin.Context) {
 	id := context.Param("id")
 	idInt, _ := strconv.Atoi(id)

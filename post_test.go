@@ -4,6 +4,15 @@ import (
 	"testing"
 )
 
+func TestID(t *testing.T) {
+	post := Post{id: "1234"}
+	want := "1234"
+	got := post.ID()
+	if got != want {
+		t.Errorf("TestCompanyName FAILED : want %v, got %v.\n", want, got)
+	}
+}
+
 func TestCompanyName(t *testing.T) {
 	post := Post{companyName: "Company Name Test"}
 	want := "Company Name Test"
@@ -55,5 +64,24 @@ func TestURL(t *testing.T) {
 	got := post.URL()
 	if got != want {
 		t.Errorf("TestURL FAILED : want %v, got %v.\n", want, got)
+	}
+}
+
+func TestParseStructToArray(t *testing.T) {
+	post := Post{
+		id:              "1",
+		jobTitle:        "a",
+		companyName:     "b",
+		companyLocation: "c",
+		jobSnippet:      "d",
+		date:            "e",
+		url:             "f",
+	}
+	want := [7]string{"1", "a", "b", "c", "d", "e", "f"}
+	got := ParseStructToArray(post)
+	for i := 0; i < len(got); i++ {
+		if want[i] != got[i] {
+			t.Errorf("TestParseStructToArray FAILED : want %v, got %v.\n", want, got)
+		}
 	}
 }
