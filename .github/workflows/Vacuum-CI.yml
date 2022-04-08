@@ -36,7 +36,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Installs Go version 1.17 on the runner
+      # Installs Go version 1.18 on the runner
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -51,14 +51,14 @@ jobs:
       - name: Run go vet
         run: go vet ./...
 
-      - name: Install staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+   #   - name: Install staticcheck
+   #     run: go install honnef.co/go/tools/cmd/staticcheck@latest
 
-      - name: Run staticcheck
-        run: staticcheck ./...
+   #   - name: Run staticcheck
+   #     run: staticcheck ./...
 
-      - name: Install golint
-        run: go install golang.org/x/lint/golint@latest
+   #   - name: Install golint
+   #     run: go install golang.org/x/lint/golint@latest
 
       - name: Run golint
         run: golint ./...
