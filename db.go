@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+//Database is an instance of the database.
 type Database struct {
 	DB *sql.DB
 }

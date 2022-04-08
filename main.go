@@ -13,6 +13,7 @@ import (
 	"unicode"
 )
 
+//URL object.
 type URL struct {
 	Base     string
 	Term     string
@@ -20,6 +21,7 @@ type URL struct {
 }
 
 var (
+	//TermToSearch variable.
 	TermToSearch string
 )
 

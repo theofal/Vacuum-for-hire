@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//CsvFile is an instance of a csv file.
 type CsvFile struct {
 	Reader  *csv.Reader
 	Writer  *csv.Writer

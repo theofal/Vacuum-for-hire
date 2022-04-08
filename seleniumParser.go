@@ -14,9 +14,11 @@ import (
 var (
 	chromedriverPath = os.Getenv("WEBDRIVER_PATH")
 	port, _          = strconv.Atoi(os.Getenv("PORT"))
-	Web              WebDriver
+	//Web webdriver instance.
+	//Web WebDriver TODO REMOVE
 )
 
+//WebDriver object structure.
 type WebDriver struct {
 	Driver  selenium.WebDriver
 	Service selenium.Service
@@ -86,8 +88,8 @@ func Webdriver() *WebDriver {
 		Logger.Warn("Couldn't set elements searching timeout.", zap.Error(err))
 	}
 
-	Web.Driver = wd
-	Web.Service = *service
+	//Web.Driver = wd TODO REMOVE
+	//Web.Service = *service TODO REMOVE
 
 	Logger.Info("WebDriver created.")
 	return &WebDriver{Driver: wd, Service: *service}

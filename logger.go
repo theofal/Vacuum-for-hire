@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	//Logger instance.
 	Logger *zap.Logger
 )
 
