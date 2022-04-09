@@ -215,11 +215,11 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) ([]Post, error) {
 
 			allJobs = append(allJobs,
 				Post{
-					jobTitle:        parseString(jobTitle),
-					date:            ParseDate(jobDate),
-					companyName:     parseString(companyName),
-					companyLocation: parseString(companyLocation),
-					url:             parseString(jobLink),
+					JobTitle:        parseString(jobTitle),
+					Date:            ParseDate(jobDate),
+					CompanyName:     parseString(companyName),
+					CompanyLocation: parseString(companyLocation),
+					Url:             parseString(jobLink),
 				})
 			index++
 

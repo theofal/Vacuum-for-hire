@@ -60,7 +60,8 @@ func ParseDate(date string) string {
 	return fmt.Sprintf("Couldn't parse time \"%v\".", date)
 }
 
-func main() {
+//TODO REMETTRE LE MAIN (actuellement dans api.go)
+func main2() {
 
 	//Logger initialisation.
 	TermToSearch = "Golang"

@@ -13,9 +13,7 @@ type Database struct {
 	DB *sql.DB
 }
 
-var Db Database
-
-//TODO GERER LES ERREURS (ex: if err.is(blabla))
+var db Database
 
 // GetDbFile checks if a 'Vacuum-database.db' file is present on the project
 // and instantiates a new seed.
@@ -40,22 +38,22 @@ func GetDbFile() (*Database, *sql.DB) {
 	sqliteDatabase, _ := sql.Open("sqlite3", "./vacuum-database.db") // Open the created SQLite File
 	Logger.Info("Database opened.")
 
-	Db.DB = sqliteDatabase
+	db.DB = sqliteDatabase
 
 	if emptyDb {
-		Db.CreateTable()
+		db.CreateTable()
 	}
 
-	err = Db.IsSeeded()
+	err = db.IsSeeded()
 	if err != nil {
 		if errors.Is(ErrSeedNotFound, err) {
-			Db.CreateTable()
+			db.CreateTable()
 		} else {
 			Logger.Error("Error while verifying db seed.", zap.Error(err))
 		}
 	}
 
-	return &Db, sqliteDatabase
+	return &db, sqliteDatabase
 }
 
 // CreateTable creates a new table in a given database.
@@ -105,7 +103,7 @@ func (db Database) InsertDataInTable(jobList []Post) error {
 			Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
 			return err
 		}
-		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle(), jobList[i].CompanyName(), jobList[i].CompanyLocation(), jobList[i].JobSnippet(), jobList[i].Date(), jobList[i].URL())
+		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].Url)
 		if err != nil {
 			Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
 			return err
@@ -119,7 +117,7 @@ func (db Database) InsertDataInTable(jobList []Post) error {
 func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 	var allJobs []Post
 
-	row, err := db.DB.Query("SELECT * FROM JobList WHERE ROWID > ? ORDER BY Date DESC", ID)
+	row, err := db.DB.Query("SELECT * FROM JobList WHERE ROWID > ?", ID)
 	if err != nil {
 		Logger.Error("Error while querying the database.", zap.Error(err))
 		return nil, err
@@ -148,14 +146,14 @@ func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 		}
 		allJobs = append(allJobs,
 			Post{
-				id:              ID,
-				jobTitle:        JobTitle,
-				date:            Date,
-				companyName:     CompanyName,
-				companyLocation: CompanyLocation,
-				url:             URL,
+				Id:              ID,
+				JobTitle:        JobTitle,
+				Date:            Date,
+				CompanyName:     CompanyName,
+				CompanyLocation: CompanyLocation,
+				Url:             URL,
 			})
-		Logger.Debug("Jobs: " + SearchedTerm + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + URL)
+		//Logger.Debug("Jobs: " + SearchedTerm + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + URL)
 	}
 
 	return allJobs, err

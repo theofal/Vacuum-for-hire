@@ -1,51 +1,18 @@
 package main
 
-import "reflect"
+import (
+	"reflect"
+)
 
 //Post is the job structure.
 type Post struct {
-	id              string
-	jobTitle        string
-	companyName     string
-	companyLocation string
-	jobSnippet      string
-	date            string
-	url             string
-}
-
-//ID getter of Post struct.
-func (post *Post) ID() string {
-	return post.id
-}
-
-//CompanyName getter of Post struct.
-func (post *Post) CompanyName() string {
-	return post.companyName
-}
-
-//JobTitle getter of Post struct.
-func (post *Post) JobTitle() string {
-	return post.jobTitle
-}
-
-//CompanyLocation getter of Post struct.
-func (post *Post) CompanyLocation() string {
-	return post.companyLocation
-}
-
-//JobSnippet getter of Post struct.
-func (post *Post) JobSnippet() string {
-	return post.jobSnippet
-}
-
-//Date getter of Post struct.
-func (post *Post) Date() string {
-	return post.date
-}
-
-//URL getter of Post struct.
-func (post *Post) URL() string {
-	return post.url
+	Id              string `json:"ID" gorm:"ID"`
+	JobTitle        string `json:"JobTitle" gorm:"JobTitle"`
+	CompanyName     string `json:"CompanyName" gorm:"CompanyName"`
+	CompanyLocation string `json:"CompanyLocation" gorm:"CompanyLocation"`
+	JobSnippet      string `json:"JobSnippet" gorm:"JobSnippet"`
+	Date            string `json:"Date" gorm:"Date"`
+	Url             string `json:"Url" gorm:"Url"`
 }
 
 //ParseStructToArray parses an interface (in our case, a Post) to a list of strings.
@@ -57,4 +24,21 @@ func ParseStructToArray(post interface{}) []string {
 	}
 
 	return dataArray
+}
+
+func ParseToJson(post []Post) []map[string]string {
+	jsonList := make([]map[string]string, 0)
+	for i := 0; i < len(post); i++ {
+		j := map[string]string{
+			"ID":              post[i].Id,
+			"JobTitle":        post[i].JobTitle,
+			"CompanyName":     post[i].CompanyName,
+			"CompanyLocation": post[i].CompanyLocation,
+			"JobSnippet":      post[i].JobSnippet,
+			"Date":            post[i].Date,
+			"URL":             post[i].Url,
+		}
+		jsonList = append(jsonList, j)
+	}
+	return jsonList
 }

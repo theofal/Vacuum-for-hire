@@ -10,6 +10,8 @@
 
 
 #### améliorations:
+- plusieurs recherches simultanées
+- Pas de doublons
 - serveur kimsufi (debian + docker)
 - hébergement docker (https://geekflare.com/fr/docker-hosting-platforms/)
 - Mise en place d'un cron pour lancer une goroutine tous les X t - https://github.com/robfig/cron)

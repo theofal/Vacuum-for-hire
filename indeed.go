@@ -57,12 +57,12 @@ func _(selection *goquery.Document) []Post {
 		if !isVisible {
 			fmt.Println(fmt.Errorf("couldn't find url %v", isVisible))
 		}
-		post.url = parseIndeedURL(url)
-		post.jobTitle = s.Find("h2.jobTitle>span").Text()
-		post.companyName = s.Find(".companyName").Text()
-		post.companyLocation = s.Find(".companyLocation").Text()
-		post.jobSnippet = s.Find(".job-snippet>ul>li").Text()
-		post.date = ParseDate(s.Find(".date").Text())
+		post.Url = parseIndeedURL(url)
+		post.JobTitle = s.Find("h2.jobTitle>span").Text()
+		post.CompanyName = s.Find(".companyName").Text()
+		post.CompanyLocation = s.Find(".companyLocation").Text()
+		post.JobSnippet = s.Find(".job-snippet>ul>li").Text()
+		post.Date = ParseDate(s.Find(".date").Text())
 		allJobs = append(allJobs, post)
 	})
 	return allJobs
