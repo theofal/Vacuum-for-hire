@@ -61,7 +61,7 @@ func TestSearchGoogle(t *testing.T) {
 	if len(allJobs) <= 0 || allJobs == nil {
 		t.Errorf("Empty or nil list of jobs")
 	}
-	if allJobs[0].JobTitle() == "<NIL>" {
+	if allJobs[0].JobTitle == "<NIL>" {
 		t.Errorf("Got <NIL> jobtitle from the first element of AllJobs")
 	}
 }
