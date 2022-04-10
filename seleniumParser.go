@@ -219,7 +219,7 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) ([]Post, error) {
 					Date:            ParseDate(jobDate),
 					CompanyName:     parseString(companyName),
 					CompanyLocation: parseString(companyLocation),
-					Url:             parseString(jobLink),
+					URL:             parseString(jobLink),
 				})
 			index++
 
@@ -228,7 +228,6 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) ([]Post, error) {
 		}
 		tmp++
 	}
-	fmt.Println(allJobs)
 	Logger.Info("Done finding all the jobs !", zap.String("numberOfJobs", strconv.Itoa(len(allJobs))))
 	return allJobs, err
 }

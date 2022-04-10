@@ -46,6 +46,6 @@ func getAllPostsSinceLastID(context *gin.Context) {
 
 // TODO : channel (?) to make the router stop once data has been retrieved (https://github.com/gin-gonic/gin#graceful-shutdown-or-restart)
 
-func main() {
+func main2() {
 	_ = InitAPIServer()
 }

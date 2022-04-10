@@ -116,6 +116,6 @@ func (file CsvFile) importMissingData(content [][]string) error {
 		Logger.Error("An error occurred while writing to csv.", zap.Error(err))
 		return err
 	}
-	Logger.Debug("Data imported to csv file.")
+	Logger.Info("Data imported to csv file.")
 	return nil
 }

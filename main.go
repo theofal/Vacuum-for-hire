@@ -61,7 +61,7 @@ func ParseDate(date string) string {
 }
 
 //TODO REMETTRE LE MAIN (actuellement dans api.go)
-func main2() {
+func main() {
 
 	//Logger initialisation.
 	TermToSearch = "Golang"

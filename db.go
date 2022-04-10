@@ -103,7 +103,7 @@ func (db Database) InsertDataInTable(jobList []Post) error {
 			Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
 			return err
 		}
-		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].Url)
+		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].URL)
 		if err != nil {
 			Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
 			return err
@@ -146,12 +146,12 @@ func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 		}
 		allJobs = append(allJobs,
 			Post{
-				Id:              ID,
+				ID:              ID,
 				JobTitle:        JobTitle,
 				Date:            Date,
 				CompanyName:     CompanyName,
 				CompanyLocation: CompanyLocation,
-				Url:             URL,
+				URL:             URL,
 			})
 		//Logger.Debug("Jobs: " + SearchedTerm + JobTitle + " " + CompanyName + " " + CompanyLocation + " " + JobSnippet + " " + Date + " " + URL)
 	}

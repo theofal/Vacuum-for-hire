@@ -22,6 +22,8 @@ shell-docker:
 	docker container run -it vacuum-for-hire /bin/bash
 clean-docker-images:
 	./utils/clean.sh
+clean-docker-volumes:
+	docker volume rm $(docker volume ls -q)
 test-docker:
 	docker run vacuum-for-hire make test
 
