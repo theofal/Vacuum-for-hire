@@ -26,7 +26,7 @@ func InitAPIServer(c chan []Post, index int) {
 		v1.GET("posts/:id", getAllPostsSinceLastID)
 	}
 
-	go httpGetReq(c, index)
+	go requestPostsFromAPI(c, index)
 
 	Logger.Info("Starting server.")
 	err := manners.ListenAndServe(":8090", router)
@@ -37,7 +37,9 @@ func InitAPIServer(c chan []Post, index int) {
 
 }
 
-func httpGetReq(c chan []Post, index int) {
+//requestPostsFromAPI goroutine called in InitAPIServer. This function requests data from API server and exports data
+//as []Post to main function via a channel.
+func requestPostsFromAPI(c chan []Post, index int) {
 	var resp *http.Response
 
 	for i := 1; i <= 5; i++ {
