@@ -8,16 +8,17 @@ import (
 	"os"
 )
 
-//Database is an instance of the database.
-type Database struct {
+//database is an instance of the database.
+type database struct {
 	DB *sql.DB
 }
 
-var db Database
+var db database
 
-// GetDbFile checks if a 'Vacuum-database.db' file is present on the project
-// and instantiates a new seed.
-func GetDbFile() (*Database, *sql.DB) {
+// GetDbFile checks if a 'Vacuum-database.db' file is present on the project,
+// instantiates a new seed if empty and opens the database.
+// TODO : j'aime pas cette fonction, créer un getter ou reflechir a autre chose
+func GetDbFile() (*database, *sql.DB) {
 	var emptyDb bool
 
 	_, err := os.Stat("vacuum-database.db")
@@ -36,7 +37,7 @@ func GetDbFile() (*Database, *sql.DB) {
 
 	Logger.Info("Opening database.")
 	sqliteDatabase, _ := sql.Open("sqlite3", "./vacuum-database.db") // Open the created SQLite File
-	Logger.Info("Database opened.")
+	Logger.Info("database opened.")
 
 	db.DB = sqliteDatabase
 
@@ -57,7 +58,7 @@ func GetDbFile() (*Database, *sql.DB) {
 }
 
 // CreateTable creates a new table in a given database.
-func (db Database) CreateTable() *error {
+func (db database) CreateTable() *error {
 	createJobTableSQL := `CREATE TABLE JobList (
     	"ID" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"SearchedTerm" TEXT,
@@ -92,7 +93,7 @@ func (db Database) CreateTable() *error {
 }
 
 // InsertDataInTable inserts data in a given database table.
-func (db Database) InsertDataInTable(jobList []Post) error {
+func (db database) InsertDataInTable(jobList []Post) error {
 	Logger.Info("Inserting jobs in database.")
 	var err error
 	for i := range jobList {
@@ -114,7 +115,7 @@ func (db Database) InsertDataInTable(jobList []Post) error {
 }
 
 // GetDataSinceSpecificID retrieves data (posterior to an input date) from a given database table.
-func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
+func (db database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 	var allJobs []Post
 
 	row, err := db.DB.Query("SELECT * FROM JobList WHERE ROWID > ?", ID)
@@ -160,7 +161,7 @@ func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 }
 
 // IsSeeded checks if a given database is seeded or empty.
-func (db Database) IsSeeded() error {
+func (db database) IsSeeded() error {
 	row, err := db.DB.Query("SELECT * FROM JobList")
 	defer func(row *sql.Rows) {
 		err := row.Close()
