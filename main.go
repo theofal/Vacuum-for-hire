@@ -3,12 +3,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/braintree/manners"
 	"github.com/joho/godotenv"
 	_ "github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 )
@@ -60,7 +62,7 @@ func ParseDate(date string) string {
 	return fmt.Sprintf("Couldn't parse time \"%v\".", date)
 }
 
-func main2() {
+func main() {
 
 	//Logger initialisation.
 	TermToSearch = "Golang"
@@ -94,11 +96,23 @@ func main2() {
 	//Csv file creation/retrieve.
 	csvFile := GetCsvFile()
 
-	//Querying data from DB.
-	listOfJobs, err := db.GetDataSinceSpecificID(csvFile.getLastImportID())
+	//API server implementation and fetching data
+	var wg sync.WaitGroup
+	c := make(chan []Post)
+	go InitAPIServer(c, csvFile.getLastImportID())
+	wg.Add(1)
+	listOfJobs := <-c
+	wg.Done()
+	fmt.Println(listOfJobs)
+	Logger.Info("Job done, closing router.")
+	manners.Close()
+	close(c)
+
+	//Way to fetch data directly from db
+	/*listOfJobs, err := db.GetDataSinceSpecificID(csvFile.getLastImportID())
 	if err != nil {
 		fmt.Println(err)
-	}
+	}*/
 
 	//Transforming Post struct into string array of arrays.
 	allTheJobs := make([][]string, 0)
@@ -113,7 +127,3 @@ func main2() {
 		Logger.Error("Error while importing data", zap.Error(err))
 	}
 }
-
-// API ?
-//1er cron qui lance le job et qui declenche un webhook
-//webhook pour executer un cron qui va récupérer les données de la db et la mettre en ligne

@@ -6,13 +6,13 @@ import (
 
 //Post is the job structure.
 type Post struct {
-	ID              string `json:"ID" gorm:"ID"`
-	JobTitle        string `json:"JobTitle" gorm:"JobTitle"`
-	CompanyName     string `json:"CompanyName" gorm:"CompanyName"`
-	CompanyLocation string `json:"CompanyLocation" gorm:"CompanyLocation"`
-	JobSnippet      string `json:"JobSnippet" gorm:"JobSnippet"`
-	Date            string `json:"Date" gorm:"Date"`
-	URL             string `json:"Url" gorm:"Url"`
+	ID              string `json:"id" gorm:"ID"`
+	JobTitle        string `json:"jobTitle" gorm:"JobTitle"`
+	CompanyName     string `json:"companyName" gorm:"CompanyName"`
+	CompanyLocation string `json:"companyLocation" gorm:"CompanyLocation"`
+	JobSnippet      string `json:"jobSnippet" gorm:"JobSnippet"`
+	Date            string `json:"date" gorm:"Date"`
+	URL             string `json:"url" gorm:"Url"`
 }
 
 //ParseStructToArray parses an interface (in our case, a Post) to a list of strings.

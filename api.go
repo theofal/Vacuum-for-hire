@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/braintree/manners"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-ping/ping"
@@ -16,7 +17,7 @@ import (
 )
 
 //InitAPIServer initialises a new API server.
-func InitAPIServer(c2 chan []Post) {
+func InitAPIServer(c chan []Post, index int) {
 	Logger.Info("Initialising API server.")
 	router := gin.Default()
 
@@ -25,7 +26,7 @@ func InitAPIServer(c2 chan []Post) {
 		v1.GET("posts/:id", getAllPostsSinceLastID)
 	}
 
-	go httpGetReq(c2)
+	go httpGetReq(c, index)
 
 	Logger.Info("Starting server.")
 	err := manners.ListenAndServe(":8090", router)
@@ -36,17 +37,17 @@ func InitAPIServer(c2 chan []Post) {
 
 }
 
-func httpGetReq(c2 chan []Post) {
+func httpGetReq(c chan []Post, index int) {
 	var resp *http.Response
 
 	for i := 1; i <= 5; i++ {
 		Logger.Debug("Trying to get data from API server.", zap.String("try number", strconv.Itoa(i)))
-		resp, _ = http.Get("http://localhost:8090/api/posts/50")
+		resp, _ = http.Get("http://localhost:8090/api/posts/" + strconv.Itoa(index))
 		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			time.Sleep(1 * time.Second)
 			continue
 		} else {
-			Logger.Debug("Got all the data I needed(?)!")
+			Logger.Debug("Got all the data I needed!?")
 			break
 		}
 	}
@@ -58,8 +59,8 @@ func httpGetReq(c2 chan []Post) {
 		Logger.Error("An error occurred while unmarshalling json.", zap.Error(err))
 		os.Exit(1)
 	}
-	Logger.Info("Done getting data from API server.")
-	c2 <- jobs
+	Logger.Info("Done getting data from API server.", zap.String("Number of jobs", strconv.Itoa(len(jobs))))
+	c <- jobs
 }
 
 //getAllPostsSinceLastID returns the list of posts where their ID is superior to the given ID.
@@ -85,15 +86,17 @@ func getAllPostsSinceLastID(context *gin.Context) {
 
 // TODO : channel (?) to make the router stop once data has been retrieved (https://github.com/gin-gonic/gin#graceful-shutdown-or-restart)
 
-func main() {
+func main2() {
 	var wg sync.WaitGroup
 	c := make(chan []Post)
 
 	Logger = InitLogger()
-	go InitAPIServer(c)
+	go InitAPIServer(c, 49)
 	wg.Add(1)
-	_ = <-c
+	jobsList := <-c
 	wg.Done()
+	fmt.Println(jobsList)
+	fmt.Println(len(jobsList))
 	Logger.Info("Job done, closing router.")
 	manners.Close()
 	close(c)
