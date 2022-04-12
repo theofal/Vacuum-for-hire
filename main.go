@@ -108,7 +108,7 @@ func main() {
 	manners.Close()
 	close(c)
 
-	//Way to fetch data directly from db
+	//Way to fetch data directly from db - Not used if the API is used.
 	/*listOfJobs, err := db.GetDataSinceSpecificID(csvFile.getLastImportID())
 	if err != nil {
 		fmt.Println(err)

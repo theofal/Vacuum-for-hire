@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-ping/ping"
 	"go.uber.org/zap"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -54,6 +55,12 @@ func requestPostsFromAPI(c chan []Post, index int) {
 		}
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
+
+	defer func(Body io.ReadCloser) {
+		if err := Body.Close(); err != nil {
+			os.Exit(1)
+		}
+	}(resp.Body)
 
 	var jobs []Post
 	err := json.Unmarshal(body, &jobs)
