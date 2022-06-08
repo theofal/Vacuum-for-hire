@@ -88,12 +88,8 @@ func Webdriver() *WebDriver {
 		Logger.Warn("Couldn't set elements searching timeout.", zap.Error(err))
 	}
 
-	//Web.Driver = wd TODO REMOVE
-	//Web.Service = *service TODO REMOVE
-
 	Logger.Info("WebDriver created.")
 	return &WebDriver{Driver: wd, Service: *service}
-
 }
 
 // SearchGoogle : selenium steps to scrap data from Google.
@@ -181,9 +177,8 @@ func (wd *WebDriver) SearchGoogle(termToSearch string) ([]Post, error) {
 		return nil, ErrTimedOut
 	}
 
-	tmp, index := -1, 0
-
 	// Get the list of jobs as WebElements
+	tmp, index := -1, 0
 	Logger.Debug("Getting the list of jobs.")
 	for index != tmp {
 		Logger.Debug("Trying to find job element.",
