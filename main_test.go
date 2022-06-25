@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/theofal/Vacuum-for-hire/services/app"
 	"go.uber.org/zap"
 	_ "go.uber.org/zap"
 	_ "go.uber.org/zap/zapcore"
@@ -12,10 +13,10 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	Logger = InitLogger()
+	app.Logger = app.InitLogger()
 	defer func(Logger *zap.Logger) {
 		_ = Logger.Sync()
-	}(Logger)
+	}(app.Logger)
 	// Do stuff BEFORE the tests!
 	exitVal := m.Run()
 	// Do stuff AFTER the tests!
