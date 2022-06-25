@@ -94,7 +94,7 @@ func TestGetLastImportID(t *testing.T) {
 	csvFile := GetCsvFile()
 
 	want := 1
-	got := csvFile.getLastImportID()
+	got := csvFile.GetLastImportID()
 	if got != want {
 		t.Errorf("TestGetIDColumnIndex FAILED : want %v, got %v.\n", want, got)
 	}
