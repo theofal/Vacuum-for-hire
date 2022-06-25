@@ -1,3 +1,3 @@
-package app
+package main
 
 // TODO DB TESTS

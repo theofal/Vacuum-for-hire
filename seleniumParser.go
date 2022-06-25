@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"fmt"
@@ -14,8 +14,6 @@ import (
 var (
 	chromedriverPath = os.Getenv("WEBDRIVER_PATH")
 	port, _          = strconv.Atoi(os.Getenv("PORT"))
-	//Web webdriver instance.
-	//Web WebDriver TODO REMOVE
 )
 
 //WebDriver object structure.

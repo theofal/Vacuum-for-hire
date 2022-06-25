@@ -1,4 +1,4 @@
-package app
+package main
 
 //URL object.
 type URL struct {
