@@ -16,9 +16,9 @@ import (
 //GetIndeedUrl.
 func _() URL {
 	return URL{
-		"https://fr.indeed.com/jobs?q=",
-		os.Args[1],
-		"&l=France&sort=date&limit=50&fromage=1",
+		Base:     "https://fr.indeed.com/jobs?q=",
+		Term:     os.Args[1],
+		Endpoint: "&l=France&sort=date&limit=50&fromage=1",
 	}
 }
 

@@ -22,7 +22,7 @@ func InitAPIServer(c chan []Post, index int) {
 	Logger.Info("Initialising API server.")
 	router := gin.Default()
 
-	v1 := router.Group("/api/")
+	v1 := router.Group("/server/")
 	{
 		v1.GET("posts/:id", getAllPostsSinceLastID)
 	}
@@ -45,7 +45,7 @@ func requestPostsFromAPI(c chan []Post, index int) {
 
 	for i := 1; i <= 5; i++ {
 		Logger.Debug("Trying to get data from API server.", zap.String("try number", strconv.Itoa(i)))
-		resp, _ = http.Get("http://localhost:8090/api/posts/" + strconv.Itoa(index))
+		resp, _ = http.Get("http://localhost:8090/server/posts/" + strconv.Itoa(index))
 		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			time.Sleep(1 * time.Second)
 			continue
@@ -83,7 +83,7 @@ func getAllPostsSinceLastID(context *gin.Context) {
 	}
 	// TODO : Ameliorer pour éviter la possibilité d'ouvrir la db à deux endroits en meme temps (https://medium.com/golang-issue/how-singleton-pattern-works-with-golang-2fdd61cd5a7f)
 	// TODO : remove the database instantiation via a getter ?
-	jobList, err := database{DB: db}.GetDataSinceSpecificID(idInt)
+	jobList, err := Database{DB: db}.GetDataSinceSpecificID(idInt)
 	if err != nil {
 		Logger.Error("An error occurred while querying the database.", zap.Error(err))
 		os.Exit(1)

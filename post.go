@@ -1,7 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"go.uber.org/zap"
 	"reflect"
+	"strconv"
+	"strings"
+	"time"
+	"unicode"
 )
 
 //Post is the job structure.
@@ -41,4 +47,30 @@ func ParseToJson(post []Post) []map[string]string {
 		jsonList = append(jsonList, j)
 	}
 	return jsonList
+}
+
+// ParseDate returns a date in a string format to when the job post was uploaded.
+func ParseDate(date string) string {
+	var amount string
+	Logger.Debug("Parsing date.", zap.String("Date", date))
+	for _, v := range date {
+		if unicode.IsDigit(v) {
+			amount += string(v)
+		}
+	}
+	intAmount, _ := strconv.Atoi(amount)
+	timeMinusMinutes := time.Now().Add(-time.Minute * time.Duration(intAmount)).Format("02/01/2006 15:04")
+	timeMinusHours := time.Now().Add(-time.Hour * time.Duration(intAmount)).Format("02/01/2006 15:04")
+	timeMinusDays := time.Now().AddDate(0, 0, -2).Format("02/01/2006 15:04")
+	switch {
+	case date == "PostedPubliée à l'instant" || date == "PostedAujourd'hui":
+		return time.Now().Format("02/01/2006 15:04")
+	case strings.Contains(strings.ToLower(date), "minute"):
+		return timeMinusMinutes
+	case strings.Contains(strings.ToLower(date), "heure"):
+		return timeMinusHours
+	case strings.Contains(strings.ToLower(date), "jour"):
+		return timeMinusDays
+	}
+	return fmt.Sprintf("Couldn't parse time \"%v\".", date)
 }

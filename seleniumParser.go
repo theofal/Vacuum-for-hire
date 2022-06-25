@@ -14,8 +14,6 @@ import (
 var (
 	chromedriverPath = os.Getenv("WEBDRIVER_PATH")
 	port, _          = strconv.Atoi(os.Getenv("PORT"))
-	//Web webdriver instance.
-	//Web WebDriver TODO REMOVE
 )
 
 //WebDriver object structure.
@@ -31,9 +29,9 @@ func getGoogleURL(termToSearch string) string {
 		os.Exit(1)
 	}
 	url := URL{
-		"https://www.google.com/search?&q=",
-		termToSearch,
-		"&ibp=htl;jobs",
+		Base:     "https://www.google.com/search?&q=",
+		Term:     termToSearch,
+		Endpoint: "&ibp=htl;jobs",
 	}
 	return url.Base + url.Term + url.Endpoint
 }

@@ -8,17 +8,17 @@ import (
 	"os"
 )
 
-//database is an instance of the database.
-type database struct {
+//Database is an instance of the Database.
+type Database struct {
 	DB *sql.DB
 }
 
-var db database
+var db Database
 
 // GetDbFile checks if a 'Vacuum-database.db' file is present on the project,
 // instantiates a new seed if empty and opens the database.
 // TODO : j'aime pas cette fonction, créer un getter ou reflechir a autre chose
-func GetDbFile() (*database, *sql.DB) {
+func GetDbFile() (*Database, *sql.DB) {
 	var emptyDb bool
 
 	_, err := os.Stat("vacuum-database.db")
@@ -58,7 +58,7 @@ func GetDbFile() (*database, *sql.DB) {
 }
 
 // CreateTable creates a new table in a given database.
-func (db database) CreateTable() *error {
+func (db Database) CreateTable() *error {
 	createJobTableSQL := `CREATE TABLE JobList (
     	"ID" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"SearchedTerm" TEXT,
@@ -93,7 +93,7 @@ func (db database) CreateTable() *error {
 }
 
 // InsertDataInTable inserts data in a given database table.
-func (db database) InsertDataInTable(jobList []Post) error {
+func (db Database) InsertDataInTable(jobList []Post) error {
 	Logger.Info("Inserting jobs in database.")
 	var err error
 	for i := range jobList {
@@ -115,7 +115,7 @@ func (db database) InsertDataInTable(jobList []Post) error {
 }
 
 // GetDataSinceSpecificID retrieves data (posterior to an input date) from a given database table.
-func (db database) GetDataSinceSpecificID(ID int) ([]Post, error) {
+func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 	var allJobs []Post
 
 	row, err := db.DB.Query("SELECT * FROM JobList WHERE ROWID > ?", ID)
@@ -161,7 +161,7 @@ func (db database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 }
 
 // IsSeeded checks if a given database is seeded or empty.
-func (db database) IsSeeded() error {
+func (db Database) IsSeeded() error {
 	row, err := db.DB.Query("SELECT * FROM JobList")
 	defer func(row *sql.Rows) {
 		err := row.Close()

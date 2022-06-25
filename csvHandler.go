@@ -89,8 +89,8 @@ func (file CsvFile) getIDColumnIndex() (int, error) {
 	return 0, ErrEmptyFile
 }
 
-//getLastImportID retrieves the most recent ID from the CSV file and returns it.
-func (file CsvFile) getLastImportID() int {
+//GetLastImportID retrieves the most recent ID from the CSV file and returns it.
+func (file CsvFile) GetLastImportID() int {
 	maxID := 0
 	file.IsSeeded()
 	columnIndex, err := file.getIDColumnIndex()
@@ -108,8 +108,8 @@ func (file CsvFile) getLastImportID() int {
 
 //get json data
 
-//importMissingData synchronises the DB and the csv file by adding missing data to it.
-func (file CsvFile) importMissingData(content [][]string) error {
+//ImportMissingData synchronises the DB and the csv file by adding missing data to it.
+func (file CsvFile) ImportMissingData(content [][]string) error {
 	Logger.Debug("Trying to write data in CSV file. ")
 	err := file.Writer.WriteAll(content)
 	if err != nil {
