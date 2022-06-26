@@ -1,13 +1,14 @@
-package main
+package server
 
 import (
 	"encoding/csv"
+	"github.com/theofal/Vacuum-for-hire/services"
 	"os"
 	"testing"
 )
 
 func TestGetIDColumnIndex(t *testing.T) {
-	Logger.Debug("Creating test csv file.")
+	services.Logger.Debug("Creating test csv file.")
 	file, err := os.Create("test-csv-file.csv")
 	if err != nil {
 		t.Error(err)
@@ -32,7 +33,7 @@ func TestGetIDColumnIndex(t *testing.T) {
 	if err != nil {
 		return
 	}
-	Logger.Debug("Deleting test csv file.")
+	services.Logger.Debug("Deleting test csv file.")
 	err = os.Remove("test-csv-file.csv")
 	if err != nil {
 		return
@@ -40,7 +41,7 @@ func TestGetIDColumnIndex(t *testing.T) {
 }
 
 func TestIsSeeded(t *testing.T) {
-	Logger.Debug("Creating test csv file.")
+	services.Logger.Debug("Creating test csv file.")
 	file, err := os.Create("test-csv-file.csv")
 	if err != nil {
 		t.Error(err)
@@ -64,7 +65,7 @@ func TestIsSeeded(t *testing.T) {
 	if err != nil {
 		return
 	}
-	Logger.Debug("Deleting test csv file.")
+	services.Logger.Debug("Deleting test csv file.")
 	err = os.Remove("test-csv-file.csv")
 	if err != nil {
 		return
@@ -72,7 +73,7 @@ func TestIsSeeded(t *testing.T) {
 }
 
 func TestGetLastImportID(t *testing.T) {
-	Logger.Debug("Creating test csv file.")
+	services.Logger.Debug("Creating test csv file.")
 	file, err := os.Create("test-csv-file.csv")
 	if err != nil {
 		t.Error(err)
@@ -103,7 +104,7 @@ func TestGetLastImportID(t *testing.T) {
 	if err != nil {
 		return
 	}
-	Logger.Debug("Deleting test csv file.")
+	services.Logger.Debug("Deleting test csv file.")
 	err = os.Remove("test-csv-file.csv")
 	if err != nil {
 		return

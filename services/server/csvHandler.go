@@ -1,7 +1,8 @@
-package main
+package server
 
 import (
 	"encoding/csv"
+	"github.com/theofal/Vacuum-for-hire/services"
 	"go.uber.org/zap"
 	"os"
 	"strconv"
@@ -23,28 +24,28 @@ func GetCsvFile() CsvFile {
 	}
 	_, err := os.Stat(fileName)
 	if err != nil {
-		Logger.Info("No existing CSV file found, creating a new one.")
+		services.Logger.Info("No existing CSV file found, creating a new one.")
 		file, err := os.Create(fileName)
 		if err != nil {
-			Logger.Fatal("An error occurred while creating CSV file.", zap.Error(err))
+			services.Logger.Fatal("An error occurred while creating CSV file.", zap.Error(err))
 		}
 		err = file.Close()
 		if err != nil {
-			Logger.Fatal("An error occurred while closing CSV file.", zap.Error(err))
+			services.Logger.Fatal("An error occurred while closing CSV file.", zap.Error(err))
 		}
 	}
 
-	Logger.Info("Opening csv file.")
+	services.Logger.Info("Opening csv file.")
 	csvFile, err := os.OpenFile(fileName, os.O_APPEND|os.O_RDWR, os.ModeAppend)
 	if err != nil {
-		Logger.Fatal("An error occurred while opening CSV file.", zap.Error(err))
+		services.Logger.Fatal("An error occurred while opening CSV file.", zap.Error(err))
 	}
 	csvReader := csv.NewReader(csvFile)
 	csvWriter := csv.NewWriter(csvFile)
 
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		Logger.Fatal("An error occurred while reading csv file.", zap.Error(err))
+		services.Logger.Fatal("An error occurred while reading csv file.", zap.Error(err))
 	}
 
 	return CsvFile{
@@ -58,16 +59,16 @@ func GetCsvFile() CsvFile {
 func (file CsvFile) IsSeeded() bool {
 	record := []string{"ID", "JobTitle", "CompanyName", "CompanyLocation", "JobSnippet", "Date", "URL"}
 	if len(file.Content) == 0 {
-		Logger.Info("Empty csv file detected. Seeding.")
+		services.Logger.Info("Empty csv file detected. Seeding.")
 		err := file.Writer.Write(record)
 		if err != nil {
-			Logger.Error("An error occurred while writing to csv.", zap.Error(err))
+			services.Logger.Error("An error occurred while writing to csv.", zap.Error(err))
 			return false
 		}
-		Logger.Debug("Flushing CSV writer buffered data.")
+		services.Logger.Debug("Flushing CSV writer buffered data.")
 		file.Writer.Flush()
 		if file.Writer.Error() != nil {
-			Logger.Error("An error occurred while flushing writer.", zap.Error(file.Writer.Error()))
+			services.Logger.Error("An error occurred while flushing writer.", zap.Error(file.Writer.Error()))
 			return false
 		}
 	}
@@ -76,17 +77,17 @@ func (file CsvFile) IsSeeded() bool {
 
 // getIdColumnIndex returns the index of the "date" column.
 func (file CsvFile) getIDColumnIndex() (int, error) {
-	Logger.Debug("Trying to retrieve ID column index.")
+	services.Logger.Debug("Trying to retrieve ID column index.")
 	if len(file.Content) > 0 {
 		for i := 0; i < len(file.Content[0]); i++ {
 			if strings.ToLower(file.Content[0][i]) == "id" {
-				Logger.Debug("ID column index found.", zap.String("ID Index", strconv.Itoa(i)))
+				services.Logger.Debug("ID column index found.", zap.String("ID Index", strconv.Itoa(i)))
 				return i, nil
 			}
 		}
 	}
-	Logger.Debug("Empty csv file. Couldn't get date column index.")
-	return 0, ErrEmptyFile
+	services.Logger.Debug("Empty csv file. Couldn't get date column index.")
+	return 0, services.ErrEmptyFile
 }
 
 //GetLastImportID retrieves the most recent ID from the CSV file and returns it.
@@ -110,12 +111,12 @@ func (file CsvFile) GetLastImportID() int {
 
 //ImportMissingData synchronises the DB and the csv file by adding missing data to it.
 func (file CsvFile) ImportMissingData(content [][]string) error {
-	Logger.Debug("Trying to write data in CSV file. ")
+	services.Logger.Debug("Trying to write data in CSV file. ")
 	err := file.Writer.WriteAll(content)
 	if err != nil {
-		Logger.Error("An error occurred while writing to csv.", zap.Error(err))
+		services.Logger.Error("An error occurred while writing to csv.", zap.Error(err))
 		return err
 	}
-	Logger.Info("Data imported to csv file.")
+	services.Logger.Info("Data imported to csv file.")
 	return nil
 }

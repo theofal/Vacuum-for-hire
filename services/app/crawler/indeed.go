@@ -1,8 +1,9 @@
-package main
+package crawler
 
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/theofal/Vacuum-for-hire/services"
 	"io"
 	"log"
 	"net/http"
@@ -14,8 +15,8 @@ import (
 //NOT USED IN PROJECT.
 
 //GetIndeedUrl.
-func _() URL {
-	return URL{
+func _() services.URL {
+	return services.URL{
 		Base:     "https://fr.indeed.com/jobs?q=",
 		Term:     os.Args[1],
 		Endpoint: "&l=France&sort=date&limit=50&fromage=1",
@@ -23,7 +24,7 @@ func _() URL {
 }
 
 // IndeedScrap.
-func _(url URL, f func(doc *goquery.Document) []Post) []Post {
+func _(url services.URL, f func(doc *goquery.Document) []services.Post) []services.Post {
 	// Request the HTML page.
 	client := &http.Client{Timeout: time.Second * 20}
 	res, err := client.Get(url.Base + url.Term + url.Endpoint)
@@ -49,9 +50,9 @@ func _(url URL, f func(doc *goquery.Document) []Post) []Post {
 }
 
 //GetIndeedJobs.
-func _(selection *goquery.Document) []Post {
-	var post Post
-	var allJobs []Post
+func _(selection *goquery.Document) []services.Post {
+	var post services.Post
+	var allJobs []services.Post
 	selection.Find(".result").Each(func(i int, s *goquery.Selection) {
 		url, isVisible := s.Attr("href")
 		if !isVisible {
@@ -62,7 +63,7 @@ func _(selection *goquery.Document) []Post {
 		post.CompanyName = s.Find(".companyName").Text()
 		post.CompanyLocation = s.Find(".companyLocation").Text()
 		post.JobSnippet = s.Find(".job-snippet>ul>li").Text()
-		post.Date = ParseDate(s.Find(".date").Text())
+		post.Date = services.ParseDate(s.Find(".date").Text())
 		allJobs = append(allJobs, post)
 	})
 	return allJobs

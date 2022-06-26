@@ -1,9 +1,10 @@
-package main
+package server
 
 import (
 	"database/sql"
 	"errors"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/theofal/Vacuum-for-hire/services"
 	"go.uber.org/zap"
 	"os"
 )
@@ -24,20 +25,20 @@ func GetDbFile() (*Database, *sql.DB) {
 	_, err := os.Stat("vacuum-database.db")
 	if err != nil {
 		emptyDb = true
-		Logger.Info("No existing database found, creating a new one.")
+		services.Logger.Info("No existing database found, creating a new one.")
 		file, err := os.Create("Vacuum-database.db") // Create SQLite file
 		if err != nil {
-			Logger.Fatal("Couldn't create database file.", zap.Error(err))
+			services.Logger.Fatal("Couldn't create database file.", zap.Error(err))
 		}
 		err = file.Close()
 		if err != nil {
-			Logger.Fatal("Couldn't close database file.", zap.Error(err))
+			services.Logger.Fatal("Couldn't close database file.", zap.Error(err))
 		}
 	}
 
-	Logger.Info("Opening database.")
+	services.Logger.Info("Opening database.")
 	sqliteDatabase, _ := sql.Open("sqlite3", "./vacuum-database.db") // Open the created SQLite File
-	Logger.Info("database opened.")
+	services.Logger.Info("database opened.")
 
 	db.DB = sqliteDatabase
 
@@ -47,10 +48,10 @@ func GetDbFile() (*Database, *sql.DB) {
 
 	err = db.IsSeeded()
 	if err != nil {
-		if errors.Is(ErrSeedNotFound, err) {
+		if errors.Is(services.ErrSeedNotFound, err) {
 			db.CreateTable()
 		} else {
-			Logger.Error("Error while verifying db seed.", zap.Error(err))
+			services.Logger.Error("Error while verifying db seed.", zap.Error(err))
 		}
 	}
 
@@ -69,64 +70,64 @@ func (db Database) CreateTable() *error {
 		"Date" TEXT,
 		"Url" TEXT
 	  );`
-	Logger.Info("Creating database.")
+	services.Logger.Info("Creating database.")
 
 	statement, err := db.DB.Prepare(createJobTableSQL) // Prepare SQL Statement
 	if err != nil {
-		Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
+		services.Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
 	}
 	defer func(statement *sql.Stmt) {
 		err := statement.Close()
 		if err != nil {
-			Logger.Error("Error while closing the SQL statement.", zap.Error(err))
+			services.Logger.Error("Error while closing the SQL statement.", zap.Error(err))
 		}
 	}(statement)
 
 	_, err = statement.Exec() // Execute SQL Statements
 	if err != nil {
-		Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
+		services.Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
 	}
 
-	Logger.Info("Table created.")
+	services.Logger.Info("Table created.")
 
 	return &err
 }
 
 // InsertDataInTable inserts data in a given database table.
-func (db Database) InsertDataInTable(jobList []Post) error {
-	Logger.Info("Inserting jobs in database.")
+func (db Database) InsertDataInTable(jobList []services.Post) error {
+	services.Logger.Info("Inserting jobs in database.")
 	var err error
 	for i := range jobList {
 		insertJobSQL := `INSERT INTO JobList(SearchedTerm, JobTitle, CompanyName, CompanyLocation, JobSnippet, Date, Url) VALUES (?, ?, ?, ?, ?, ?, ?)`
 		statement, err := db.DB.Prepare(insertJobSQL) // Prepare statement.
 		// This is good to avoid SQL injections
 		if err != nil {
-			Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
+			services.Logger.Fatal("Error while preparing the SQL statement.", zap.Error(err))
 			return err
 		}
-		_, err = statement.Exec(TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].URL)
+		_, err = statement.Exec(services.TermToSearch, jobList[i].JobTitle, jobList[i].CompanyName, jobList[i].CompanyLocation, jobList[i].JobSnippet, jobList[i].Date, jobList[i].URL)
 		if err != nil {
-			Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
+			services.Logger.Fatal("Error while executing SQL statement.", zap.Error(err))
 			return err
 		}
 	}
-	Logger.Info("Jobs inserted in database.")
+	services.Logger.Info("Jobs inserted in database.")
 	return err
 }
 
 // GetDataSinceSpecificID retrieves data (posterior to an input date) from a given database table.
-func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
-	var allJobs []Post
+func (db Database) GetDataSinceSpecificID(ID int) ([]services.Post, error) {
+	var allJobs []services.Post
 
 	row, err := db.DB.Query("SELECT * FROM JobList WHERE ROWID > ?", ID)
 	if err != nil {
-		Logger.Error("Error while querying the database.", zap.Error(err))
+		services.Logger.Error("Error while querying the database.", zap.Error(err))
 		return nil, err
 	}
 	defer func(row *sql.Rows) *error {
 		err := row.Close()
 		if err != nil {
-			Logger.Error("Error while closing sql query.", zap.Error(err))
+			services.Logger.Error("Error while closing sql query.", zap.Error(err))
 			return &err
 		}
 		return &err
@@ -146,7 +147,7 @@ func (db Database) GetDataSinceSpecificID(ID int) ([]Post, error) {
 			return nil, err
 		}
 		allJobs = append(allJobs,
-			Post{
+			services.Post{
 				ID:              ID,
 				JobTitle:        JobTitle,
 				Date:            Date,
@@ -166,12 +167,12 @@ func (db Database) IsSeeded() error {
 	defer func(row *sql.Rows) {
 		err := row.Close()
 		if err != nil {
-			Logger.Error("Error while closing the SQL statement.", zap.Error(err))
+			services.Logger.Error("Error while closing the SQL statement.", zap.Error(err))
 		}
 	}(row)
 	if err != nil {
-		Logger.Warn("Error while querying the database.", zap.Error(err))
-		return ErrSeedNotFound
+		services.Logger.Warn("Error while querying the database.", zap.Error(err))
+		return services.ErrSeedNotFound
 	}
 	return nil
 }

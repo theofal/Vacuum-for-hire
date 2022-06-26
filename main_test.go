@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/theofal/Vacuum-for-hire/services"
 	"go.uber.org/zap"
 	_ "go.uber.org/zap"
 	_ "go.uber.org/zap/zapcore"
@@ -12,10 +13,10 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	Logger = InitLogger()
+	services.Logger = services.InitLogger()
 	defer func(Logger *zap.Logger) {
 		_ = Logger.Sync()
-	}(Logger)
+	}(services.Logger)
 	// Do stuff BEFORE the tests!
 	exitVal := m.Run()
 	// Do stuff AFTER the tests!
@@ -33,7 +34,7 @@ func _(t *testing.T) {
 
 func TestParseDate(t *testing.T) {
 	expected := strconv.Itoa(time.Now().Add(-time.Hour * (time.Duration(2) * 24)).Day())
-	result := ParseDate("Il y a 2 jours")
+	result := services.ParseDate("Il y a 2 jours")
 	if !strings.Contains(result, expected) {
 		t.Errorf("FAIL : %v is not present in %v", expected, result)
 	}

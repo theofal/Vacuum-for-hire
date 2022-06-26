@@ -1,8 +1,9 @@
-package main
+package crawler
 
 import (
 	"fmt"
 	"github.com/tebeka/selenium"
+	"github.com/theofal/Vacuum-for-hire/services"
 	"os"
 	"testing"
 )
@@ -56,8 +57,8 @@ func TestParseString(t *testing.T) {
 }
 
 func TestSearchGoogle(t *testing.T) {
-	TermToSearch = "Golang"
-	allJobs, _ := Webdriver().SearchGoogle(TermToSearch)
+	services.TermToSearch = "Golang"
+	allJobs, _ := Webdriver().SearchGoogle(services.TermToSearch)
 	if len(allJobs) <= 0 || allJobs == nil {
 		t.Errorf("Empty or nil list of jobs")
 	}

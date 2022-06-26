@@ -5,7 +5,7 @@ endif
 
 # LOCAL
 run:
-	go run  $(PROJECT_PATH) $(WEBDRIVER_PATH) $(PORT)
+	go run $(PROJECT_PATH) $(WEBDRIVER_PATH) $(PORT)
 test:
 	go test -v --cover
 update-dependencies:
@@ -26,4 +26,3 @@ clean-docker-volumes:
 	docker volume rm $(docker volume ls -q)
 test-docker:
 	docker run vacuum-for-hire make test
-

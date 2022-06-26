@@ -3,19 +3,23 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/theofal/Vacuum-for-hire/services"
+	"github.com/theofal/Vacuum-for-hire/services/app/crawler"
+	"github.com/theofal/Vacuum-for-hire/services/server"
+	"os"
+	"sync"
+
 	"github.com/braintree/manners"
 	"github.com/joho/godotenv"
 	_ "github.com/robfig/cron/v3"
 	"go.uber.org/zap"
-	"os"
-	"sync"
 )
 
 // getDotEnvVar returns a specific variable in the .env file.
 func getDotEnvVar(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		Logger.Error("Couldn't find .env find", zap.Error(err))
+		services.Logger.Error("Couldn't find .env find", zap.Error(err))
 	}
 	return os.Getenv(key)
 }
@@ -24,24 +28,24 @@ func main() {
 
 	//Logger initialisation
 	if os.Args[1] == "" {
-		TermToSearch = "Golang"
+		services.TermToSearch = "Golang"
 	}
-	Logger = InitLogger()
+	services.Logger = services.InitLogger()
 	defer func(Logger *zap.Logger) {
 		_ = Logger.Sync()
-	}(Logger)
+	}(services.Logger)
 
 	//DB initialisation.
-	db, sqlDb := GetDbFile()
+	db, sqlDb := server.GetDbFile()
 	defer func(sqlDb *sql.DB) {
 		err := sqlDb.Close()
 		if err != nil {
-			Logger.Error("Error while closing sql database.", zap.Error(err))
+			services.Logger.Error("Error while closing sql database.", zap.Error(err))
 		}
 	}(sqlDb)
 
 	//Selenium webdriver instantiation + google search.
-	allJobs, err := Webdriver().SearchGoogle(TermToSearch)
+	allJobs, err := crawler.Webdriver().SearchGoogle(services.TermToSearch)
 	// TODO : If err == ErrTimedOut -> flush ? puis relancer le code
 	if err != nil {
 		os.Exit(1)
@@ -50,21 +54,21 @@ func main() {
 	//Data insertion in database.
 	err = db.InsertDataInTable(allJobs)
 	if err != nil {
-		Logger.Error("Error while inserting data in table.", zap.Error(err))
+		services.Logger.Error("Error while inserting data in table.", zap.Error(err))
 	}
 
 	//Csv file creation/retrieve.
-	csvFile := GetCsvFile()
+	csvFile := server.GetCsvFile()
 
 	//API server implementation and fetching data
 	var wg sync.WaitGroup
-	c := make(chan []Post)
-	go InitAPIServer(c, csvFile.GetLastImportID())
+	c := make(chan []services.Post)
+	go server.InitAPIServer(c, csvFile.GetLastImportID())
 	wg.Add(1)
 	listOfJobs := <-c
 	wg.Done()
 	fmt.Println(listOfJobs)
-	Logger.Info("Job done, closing router.")
+	services.Logger.Info("Job done, closing router.")
 	manners.Close()
 	close(c)
 
@@ -77,13 +81,13 @@ func main() {
 	//Transforming Post struct into string array of arrays.
 	allTheJobs := make([][]string, 0)
 	for i := 0; i < len(listOfJobs); i++ {
-		arrayOfJobs := ParseStructToArray(listOfJobs[i])
+		arrayOfJobs := services.ParseStructToArray(listOfJobs[i])
 		allTheJobs = append(allTheJobs, arrayOfJobs)
 	}
 
 	//Uploading data that are not present in the csv file.
 	err = csvFile.ImportMissingData(allTheJobs)
 	if err != nil {
-		Logger.Error("Error while importing data", zap.Error(err))
+		services.Logger.Error("Error while importing data", zap.Error(err))
 	}
 }

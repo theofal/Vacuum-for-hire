@@ -1,4 +1,4 @@
-package main
+package services
 
 import (
 	"reflect"
@@ -40,7 +40,7 @@ func TestParseToJson(t *testing.T) {
 	mapJob := map[string]string{"ID": "a", "JobTitle": "b", "CompanyName": "c", "CompanyLocation": "d", "JobSnippet": "e", "Date": "f", "URL": "g"}
 	want := make([]map[string]string, 1)
 	want[0] = mapJob
-	got := ParseToJson(jobList)
+	got := ParseToJSON(jobList)
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("TestParseStructToArray FAILED : want %v, got %v.\n", want, got)
 	}
