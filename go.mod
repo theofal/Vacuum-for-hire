@@ -12,7 +12,7 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/tebeka/selenium v0.9.9
-	go.uber.org/zap v1.22.0
+	go.uber.org/zap v1.23.0
 )
 
 require (
